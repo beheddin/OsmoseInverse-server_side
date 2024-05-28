@@ -13,7 +13,6 @@ namespace Domain.DataTransferObjects
         public string Cin { get; set; }
 
         //[JsonIgnore]    //hide pwd in JSON response
-        [DataType(DataType.Password)]
         public string Password { get; set; }
         //public RoleType RoleLabel { get; set; }
         public string RoleLabel { get; set; }

@@ -44,7 +44,7 @@ namespace Data.Repositories
                     };
 
                 // Check if the role already exists in the database
-                Role existingRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleLabel == roleType);
+                Role existingRole = await _context.Roles.FirstOrDefaultAsync(role => role.RoleLabel == roleType);
 
                 if (existingRole != null)
                     return new RepositoryResponseDTO<Role>
@@ -85,7 +85,7 @@ namespace Data.Repositories
             try
             {
                 // check if id is valid
-                Role existingRoleById = await _context.Roles.FirstOrDefaultAsync(r => r.RoleId == id);
+                Role existingRoleById = await _context.Roles.FirstOrDefaultAsync(role => role.RoleId == id);
 
                 if (existingRoleById == null)
                     return new RepositoryResponseDTO<Role>
@@ -106,8 +106,8 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                // Check if the role already exists in the database
-                Role existingRoleByLabel = await _context.Roles.FirstOrDefaultAsync(r => r.RoleLabel == roleType);
+                // Check if the role already exists
+                Role existingRoleByLabel = await _context.Roles.FirstOrDefaultAsync(role => role.RoleLabel == roleType);
 
                 if (existingRoleByLabel != null)
                     return new RepositoryResponseDTO<Role>

@@ -37,8 +37,8 @@ namespace Data.Repositories
         {
             try
             {
-                // verify if a user already exists based on the user cin
-                User existingUserByCin = await _context.Users.SingleOrDefaultAsync(u => u.Cin == userDTO.Cin);
+                // check if a user with the provided cin already exists
+                User existingUserByCin = await _context.Users.SingleOrDefaultAsync(user => user.Cin == userDTO.Cin);
                 /*
                 SingleOrDefaultAsync: expects zero or one element in the result set.
                 It returns null if no elements are found, and throws an InvalidOperationException if more than one element is found.
@@ -55,7 +55,7 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                // verify if userDTO RoleLabel exists
+                // check if userDTO RoleLabel exists
                 RoleType roleType;
 
                 if (!Enum.TryParse(userDTO.RoleLabel, true, out roleType))  //userDTO.RoleLabel: string
@@ -66,7 +66,7 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                Role existingRoleByLabel = await _context.Roles.SingleOrDefaultAsync(r => r.RoleLabel == roleType);
+                Role existingRoleByLabel = await _context.Roles.SingleOrDefaultAsync(role => role.RoleLabel == roleType);
 
                 if (existingRoleByLabel == null)
                     return new RepositoryResponseDTO<User>
@@ -76,13 +76,22 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                //hash the pwd
-                userDTO.Password = _authService.HashPassword(userDTO.Password);
+                // check if userDTO.FilialeLabel exists
+                Filiale existingFilialeByLabel = await _context.Filiales.SingleOrDefaultAsync(filiale => filiale.FilialeLabel == userDTO.FilialeLabel);
+                if (existingFilialeByLabel == null)
+                    return new RepositoryResponseDTO<User>
+                    {
+                        IsSuccessful = false,
+                        Message = "Filiale not found",
+                        Entity = null
+                    };
 
-                // Map UserDTO to User 
+                // map UserDTO to User 
                 User user = _mapper.Map<User>(userDTO);
 
+                user.Password = _authService.HashPassword(userDTO.Password);    //hash the pwd
                 user.FkRole = existingRoleByLabel.RoleId;  //set the role foreign key in user
+                user.FkFiliale = existingFilialeByLabel.FilialeId;   //set the filiale foreign key in user
 
                 //_context.Set<User>().Add(user);   //more generic way
                 //_context.Users.Add(user);
@@ -119,9 +128,9 @@ namespace Data.Repositories
             try
             {
                 // check if id is valid
-                User existingUser = await _context.Users.SingleOrDefaultAsync(u => u.UserId == id);
+                User existingUserById = await _context.Users.SingleOrDefaultAsync(user => user.UserId == id);
 
-                if (existingUser == null)
+                if (existingUserById == null)
                     return new RepositoryResponseDTO<User>
                     {
                         IsSuccessful = false,
@@ -129,7 +138,7 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                // verify if userDTO RoleLabel exists
+                // check if userDTO.RoleLabel exists
                 RoleType roleType;
 
                 if (!Enum.TryParse(userDTO.RoleLabel, true, out roleType))  //userDTO.RoleLabel: string
@@ -140,10 +149,10 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                //Role role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleLabel == Enum.Parse<RoleType>(userDTO.RoleLabel));
-                Role role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleLabel == roleType);
+                //Role role = await _context.Roles.SingleOrDefaultAsync(role => role.RoleLabel == Enum.Parse<RoleType>(userDTO.RoleLabel));
+                Role existingRoleByLabel = await _context.Roles.SingleOrDefaultAsync(role => role.RoleLabel == roleType);
 
-                if (role == null)
+                if (existingRoleByLabel == null)
                     return new RepositoryResponseDTO<User>
                     {
                         IsSuccessful = false,
@@ -151,15 +160,23 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                // Map UserDTO to User 
+                // check if userDTO.FilialeLabel exists
+                Filiale existingFilialeByLabel = await _context.Filiales.SingleOrDefaultAsync(filiale => filiale.FilialeLabel == userDTO.FilialeLabel);
+                if (existingFilialeByLabel == null)
+                    return new RepositoryResponseDTO<User>
+                    {
+                        IsSuccessful = false,
+                        Message = "Filiale not found",
+                        Entity = null
+                    };
+
+                // map UserDTO to User 
                 User user = _mapper.Map<User>(userDTO);
 
-                //changing the pwd can only be done using the ChangePassword() fct
-                user.Password = existingUser.Password;
-
-                user.UserId = id;   // set the id of userDTO to match the id of existingUser
-
-                user.FkRole = role.RoleId;  //set the role foreign key in user
+                user.UserId = id;   // set the id of userDTO to match the id of existingUserById
+                user.Password = existingUserById.Password;  //changing the pwd can only be done using the ChangePassword() fct
+                user.FkRole = existingRoleByLabel.RoleId;  //set the role foreign key in user
+                user.FkFiliale = existingFilialeByLabel.FilialeId;   //set the filiale foreign key in user
 
                 return new RepositoryResponseDTO<User>
                 {
@@ -187,7 +204,7 @@ namespace Data.Repositories
             try
             {
                 // Find a user in in the db based on its Cin
-                User existingUser = await _context.Users.SingleOrDefaultAsync(u => u.Cin == loginDTO.Cin);
+                User existingUser = await _context.Users.SingleOrDefaultAsync(user => user.Cin == loginDTO.Cin);
 
                 // Validate user credentials
                 if (existingUser == null || !_authService.VerifyPassword(loginDTO.Password, existingUser.Password)) //(password, hashedPassword)                                                                //return (false, "Invalid credentials",                                                              //return new RepositoryResponseDTO<User> { IsSuccessful = false, Message = "Invalid credentials", Token = null };
@@ -263,7 +280,7 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                User existingUser = await _context.Users.SingleOrDefaultAsync(u => u.UserId == userId);
+                User existingUser = await _context.Users.SingleOrDefaultAsync(user => user.UserId == userId);
 
                 if (existingUser == null)
                     return new RepositoryResponseDTO<User>
@@ -301,7 +318,7 @@ namespace Data.Repositories
                         Message = "New password cannot be empty",
                     };
 
-                User existingUser = await _context.Users.SingleOrDefaultAsync(u => u.UserId == id);
+                User existingUser = await _context.Users.SingleOrDefaultAsync(user => user.UserId == id);
 
                 if (existingUser == null)
                     return new RepositoryResponseDTO<User>
@@ -373,7 +390,7 @@ namespace Data.Repositories
                 //return BadRequest();
 
                 // get the user that we want to block/allow
-                User user = await _context.Users.SingleOrDefaultAsync(u => u.UserId == id);
+                User user = await _context.Users.SingleOrDefaultAsync(user => user.UserId == id);
 
                 if (user == null)
                     return new RepositoryResponseDTO<User>

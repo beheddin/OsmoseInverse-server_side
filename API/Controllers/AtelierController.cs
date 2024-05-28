@@ -13,6 +13,7 @@ using Domain.DataTransferObjects;
 using Domain.Queries;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Data;
 
 namespace API.Controllers
 {
@@ -36,7 +37,7 @@ namespace API.Controllers
         }
 
         [HttpGet("get/all")]
-        public async Task<ActionResult<IEnumerable<Atelier>>> GetAteliers()
+        public async Task<ActionResult<IEnumerable<AtelierDTO>>> GetAteliers()
         {
             try
             {
@@ -55,7 +56,7 @@ namespace API.Controllers
         }
 
         [HttpGet("get/{id}")]
-        public async Task<ActionResult<Atelier>> GetAtelierById([FromRoute] Guid id)
+        public async Task<ActionResult<AtelierDTO>> GetAtelierById([FromRoute] Guid id)
         {
             try
             {
@@ -82,14 +83,21 @@ namespace API.Controllers
         {
             try
             {
-                // Check if the atelier already exists
+                // check if the atelier already exists based on its label
                 GetByGenericQuery<Atelier> query = new GetByGenericQuery<Atelier>(atelier => atelier.AtelierLabel == atelierDTO.AtelierLabel);
                 Atelier existingAtelierByLabel = await _mediator.Send(query);
 
                 if (existingAtelierByLabel != null)
                     return Conflict($"Atelier with label '{atelierDTO.AtelierLabel}' already exists");
 
+                //check if atelierDTO.FilialeLabel exists
+                Filiale existingFilialeByLabel = await _mediator.Send(new GetByGenericQuery<Filiale>(filiale => filiale.FilialeLabel == atelierDTO.FilialeLabel));
+                if (existingFilialeByLabel == null)
+                    return NotFound($"Filiale with label '{atelierDTO.FilialeLabel}' not found");
+
                 Atelier atelier = _mapper.Map<Atelier>(atelierDTO);
+                
+                atelier.FkFiliale = existingFilialeByLabel.FilialeId;
 
                 PostGenericCommand<Atelier> command = new PostGenericCommand<Atelier>(atelier);
                 string mediatorResponse = await _mediator.Send(command);
@@ -109,23 +117,29 @@ namespace API.Controllers
             try
             {
                 // check if id is valid
-                GetByGenericQuery<Atelier> query = new GetByGenericQuery<Atelier>(atelier => atelier.AtelierId == id);
-                Atelier existingAtelierById = await _mediator.Send(query);
+                GetByGenericQuery<Atelier> queryById = new GetByGenericQuery<Atelier>(atelier => atelier.AtelierId == id);
+                Atelier existingAtelierById = await _mediator.Send(queryById);
 
                 if (existingAtelierById == null)
                     return NotFound($"Atelier with id '{id}' not found");
 
-                // check if another atelier with the same label exists
-                GetByGenericQuery<Atelier> queryByLabel = new GetByGenericQuery<Atelier>(
-                    atelier => atelier.AtelierLabel == atelierDTO.AtelierLabel && atelier.AtelierId != id);
-                Atelier existingAtelierByLabel = await _mediator.Send(queryByLabel);
+                // check if another atelier with the same label as atelierDTO.AtelierLabel exists
+                GetByGenericQuery<Atelier> queryByIdAndLabel = new GetByGenericQuery<Atelier>(atelier =>
+                    (atelier.AtelierId != id) && (atelier.AtelierLabel == atelierDTO.AtelierLabel));
 
-                if (existingAtelierByLabel != null)
+                Atelier existingAtelierByIdAndLabel = await _mediator.Send(queryByIdAndLabel);
+
+                if (existingAtelierByIdAndLabel != null)
                     return Conflict($"Atelier with label '{atelierDTO.AtelierLabel}' already exists");
 
-                Atelier atelier = _mapper.Map<Atelier>(atelierDTO);
+                //check if atelierDTO.FilialeLabel exists
+                Filiale existingFilialeByLabel = await _mediator.Send(new GetByGenericQuery<Filiale>(filiale => filiale.FilialeLabel == atelierDTO.FilialeLabel));
+                if (existingFilialeByLabel == null)
+                    return NotFound($"Filiale with label '{atelierDTO.FilialeLabel}' not found");
 
+                Atelier atelier = _mapper.Map<Atelier>(atelierDTO);
                 atelier.AtelierId = id;
+                atelier.FkFiliale = existingFilialeByLabel.FilialeId;
 
                 PutGenericCommand<Atelier> command = new PutGenericCommand<Atelier>(atelier);
                 string mediatorResponse = await _mediator.Send(command);

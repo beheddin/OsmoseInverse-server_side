@@ -85,9 +85,10 @@ namespace API.Controllers
             {
                 //return _mediator.Send(new GetAllGenericQuery<User>()).Result.Select(v => _mapper.Map<User>(v));
                 //OR
-                //var query = new GetAllGenericQuery<User>();
-                GetAllGenericQuery<User> query = new GetAllGenericQuery<User>(includes: query => query.Include(user => user.Role));    //get users with their associated roles
-                //var query = new GetAllGenericQuery<User>(q => q.Include(u => u.Role));   
+                GetAllGenericQuery<User> query = new GetAllGenericQuery<User>(
+                    includes: query => query
+                        .Include(user => user.Role) //get a user with its role
+                        .Include(user => user.Filiale));   //get a user with its filiale
 
                 IEnumerable<User> users = await _mediator.Send(query);
 
@@ -122,13 +123,16 @@ namespace API.Controllers
 
         //Mediator pattern
         //public async Task<UserDTO> GetUserById(Guid id)
-        public async Task<ActionResult<User>> GetUserById([FromRoute] Guid id)
+        public async Task<ActionResult<UserDTO>> GetUserById([FromRoute] Guid id)
         //=> await (new GetByGenericHandler<User>(_repository)).Handle(new GetByGenericQuery<User>(condition: x => x.UserId.Equals(id), null), new CancellationToken());
         {
             try
             {
                 //var query = new GetByGenericQuery<User>(user => user.UserId == id);
-                GetByGenericQuery<User> query = new GetByGenericQuery<User>(user => user.UserId == id, includes: query => query.Include(user => user.Role));
+                GetByGenericQuery<User> query = new GetByGenericQuery<User>(user => user.UserId == id,
+                    includes: query => query
+                        .Include(user => user.Role) //get a user with its role
+                        .Include(user => user.Filiale));   //get a user with its filiale
 
                 User user = await _mediator.Send(query);
 
@@ -155,7 +159,11 @@ namespace API.Controllers
         {
             try
             {
-                GetByGenericQuery<User> query = new GetByGenericQuery<User>(user => user.Cin == cin, includes: query => query.Include(user => user.Role));
+                GetByGenericQuery<User> query = new GetByGenericQuery<User>(user => user.Cin == cin,
+                    includes: query => query
+                        .Include(user => user.Role) //get a user with its role
+                        .Include(user => user.Filiale));   //get a user with its filiale
+
                 User user = await _mediator.Send(query);
 
                 if (user == null)
@@ -199,6 +207,9 @@ namespace API.Controllers
 
                         case "Role not found":
                             return NotFound($"Role with label '{userDTO.RoleLabel}' not found");
+
+                        case "Filiale not found":
+                            return NotFound($"Filiale with label '{userDTO.FilialeLabel}' not found");
 
                         default:
                             //return StatusCode(500, new { message = "An error occurred while processing your request" });
@@ -265,20 +276,32 @@ namespace API.Controllers
 
                 // handle failure
                 if (!response.IsSuccessful)
-                    switch (response.Message)
+                    //switch (response.Message)
+                    //{
+                    //    case "User not found":
+                    //        return NotFound($"User with id '{id}' not found");
+
+                    //    case "Invalid role label":
+                    //        return NotFound($"Role with label '{userDTO.RoleLabel}' is invalid");
+
+                    //    case "Role not found":
+                    //        return NotFound($"Role with label '{userDTO.RoleLabel}' not found");
+
+                    //    case "Filiale not found":
+                    //        return NotFound($"Filiale with label '{userDTO.FilialeLabel}' not found");
+
+                    //    default:
+                    //        return StatusCode(500, response.Message);
+                    //}
+                    //OR
+                    return response.Message switch
                     {
-                        case "User not found":
-                            return NotFound($"User with id '{id}' not found");
-
-                        case "Invalid role label":
-                            return NotFound($"Role with label '{userDTO.RoleLabel}' is invalid");
-
-                        case "Role not found":
-                            return NotFound($"Role with label '{userDTO.RoleLabel}' not found");
-
-                        default:
-                            return StatusCode(500, response.Message);
-                    }
+                        "User not found" => NotFound($"User with id '{id}' not found"),
+                        "Invalid role label" => BadRequest($"Role with label '{userDTO.RoleLabel}' is invalid"),
+                        "Role not found" => NotFound($"Role with label '{userDTO.RoleLabel}' not found"),
+                        "Filiale not found" => NotFound($"Filiale with label '{userDTO.FilialeLabel}' not found"),
+                        _ => StatusCode(500, response.Message),
+                    };
 
                 // handle success
                 //user update is handled by PutGenericCommand
@@ -485,7 +508,7 @@ namespace API.Controllers
                 user.Access = !user.Access;
 
                 var mediatorResponse = await _mediator.Send(new PutGenericCommand<User>(user));
-             
+
                 return Ok(mediatorResponse);
             }
             catch (Exception ex)

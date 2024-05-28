@@ -54,34 +54,47 @@ namespace Data.Context
             //modelBuilder.Entity<User>(entity => { entity.HasIndex(e=>e.Email).IsUnique(); }) ;
 
             #region Primary keys
-            modelBuilder.Entity<User>().HasKey(m => m.UserId);
-            modelBuilder.Entity<Role>().HasKey(m => m.RoleId);
+            modelBuilder.Entity<User>().HasKey(user => user.UserId);
+            modelBuilder.Entity<Role>().HasKey(role => role.RoleId);
 
-            modelBuilder.Entity<Filiale>().HasKey(m => m.FilialeId);
-            modelBuilder.Entity<Atelier>().HasKey(c => c.AtelierId);
-            modelBuilder.Entity<Station>().HasKey(c => c.StationId);
+            modelBuilder.Entity<Filiale>().HasKey(filiale => filiale.FilialeId);
+            modelBuilder.Entity<Atelier>().HasKey(atelier => atelier.AtelierId);
+            modelBuilder.Entity<Station>().HasKey(station => station.StationId);
 
             //modelBuilder.Entity<SourceEau>().HasKey(c => c.SourceEauId);
-
             //modelBuilder.Entity<ProduitChimique>().HasKey(c => c.ProduitChimiqueId);
             //modelBuilder.Entity<CategorieProduitChimique>().HasKey(c => c.CategorieProduitChimiqueId);
-
             //modelBuilder.Entity<Fournisseur>().HasKey(c => c.FournisseurId);
             #endregion
 
             #region One to many relations
-            //modelBuilder.Entity<Role>()
-            //            .HasMany(u => u.Users)
-            //            .WithOne(r => r.Role)
-            //            .HasForeignKey(fk => fk.FkRole);
-            //OR
             modelBuilder.Entity<User>()
             .HasOne(user => user.Role)
             .WithMany(role => role.Users)
             .HasForeignKey(user => user.FkRole)
             .OnDelete(DeleteBehavior.SetNull);  // Set foreign key to null on delete
-            //.OnDelete(DeleteBehavior.Restrict);  //prevent the deletion of a Role if there is at least 1 User associated with it
-            //.OnDelete(DeleteBehavior.Cascade);
+                                                //.OnDelete(DeleteBehavior.Restrict);  //prevent the deletion of a Role if there is at least 1 User associated with it
+                                                //.OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+           .HasOne(user => user.Filiale)
+           .WithMany(filiale => filiale.Users)
+           .HasForeignKey(user => user.FkFiliale)
+           .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Station>()
+           .HasOne(station => station.Atelier)
+           .WithMany(atelier => atelier.Stations)
+           .HasForeignKey(station => station.FkAtelier)
+           .OnDelete(DeleteBehavior.SetNull);
+            #endregion
+
+            #region Many to one relations
+            modelBuilder.Entity<Role>()
+                        .HasMany(role => role.Users)
+                        .WithOne(user => user.Role)
+                        .HasForeignKey(user => user.FkRole)
+                        .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Filiale>()
                         .HasMany(filiale => filiale.Users)
@@ -96,10 +109,12 @@ namespace Data.Context
                         .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Atelier>()
-                        .HasMany(atelier => atelier.Station)
+                        .HasMany(atelier => atelier.Stations)
                         .WithOne(station => station.Atelier)
                         .HasForeignKey(station => station.FkAtelier)
                         .OnDelete(DeleteBehavior.SetNull);
+
+
 
             //modelBuilder.Entity<CategorieProduitChimique>()
             //            .HasMany(o => o.ProduitChimique)

@@ -39,7 +39,7 @@ namespace API.Controllers
         }
 
         [HttpGet("get/all")]
-        public async Task<ActionResult<IEnumerable<Filiale>>> GetFiliales()
+        public async Task<ActionResult<IEnumerable<FilialeDTO>>> GetFiliales()
         {
             try
             {
@@ -58,7 +58,7 @@ namespace API.Controllers
         }
 
         [HttpGet("get/{id}")]
-        public async Task<ActionResult<Filiale>> GetFilialeById([FromRoute] Guid id)
+        public async Task<ActionResult<FilialeDTO>> GetFilialeById([FromRoute] Guid id)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace API.Controllers
         {
             try
             {
-                // Check if the filiale already exists
+                // check if the filiale already exists based on its label
                 GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.FilialeLabel == filialeDTO.FilialeLabel);
                 Filiale existingFilialeByLabel = await _mediator.Send(query);
 
@@ -111,7 +111,7 @@ namespace API.Controllers
         {
             try
             {
-                // check if FilialeId is valid
+                // check if id is valid
                 GetByGenericQuery<Filiale> queryById = new GetByGenericQuery<Filiale>(filiale => filiale.FilialeId == id);
                 Filiale existingFilialeById = await _mediator.Send(queryById);
 
@@ -126,9 +126,8 @@ namespace API.Controllers
                 if (existingFilialeByLabel != null)
                     return Conflict($"Filiale with label '{filialeDTO.FilialeLabel}' already exists");
 
-                //map FilialeDTO to Filiale and set the ID
                 Filiale filiale = _mapper.Map<Filiale>(filialeDTO);
-
+                
                 filiale.FilialeId = id;
 
                 PutGenericCommand<Filiale> command = new PutGenericCommand<Filiale>(filiale);

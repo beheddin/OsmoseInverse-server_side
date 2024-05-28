@@ -82,14 +82,22 @@ namespace API.Controllers
         {
             try
             {
-                // Check if the station already exists
+                // check if the station already exists based on its label
                 GetByGenericQuery<Station> query = new GetByGenericQuery<Station>(station => station.StationLabel == stationDTO.StationLabel);
                 Station existingStationByLabel = await _mediator.Send(query);
 
                 if (existingStationByLabel != null)
                     return Conflict($"Station with label '{stationDTO.StationLabel}' already exists");
 
+
+                //check if stationDTO.AtelierLabel exists
+                Atelier existingAtelierByLabel = await _mediator.Send(new GetByGenericQuery<Atelier>(atelier => atelier.AtelierLabel == stationDTO.AtelierLabel));
+                if (existingAtelierByLabel == null)
+                    return NotFound($"Atelier with label '{stationDTO.AtelierLabel}' not found");
+
                 Station station = _mapper.Map<Station>(stationDTO);
+               
+                station.FkAtelier = existingAtelierByLabel.AtelierId;
 
                 PostGenericCommand<Station> command = new PostGenericCommand<Station>(station);
                 string mediatorResponse = await _mediator.Send(command);
@@ -115,16 +123,24 @@ namespace API.Controllers
                 if (existingStationById == null)
                     return NotFound($"Station with id '{id}' not found");
 
-                // check if another station with the same label exists
+                // check if another station with the same label as stationDTO.StationLabel exists
                 GetByGenericQuery<Station> queryByLabel = new GetByGenericQuery<Station>(
                     station => station.StationLabel == stationDTO.StationLabel && station.StationId != id);
                 Station existingStationByLabel = await _mediator.Send(queryByLabel);
 
+                if (existingStationByLabel != null)
+                    return Conflict($"Station with label '{stationDTO.StationLabel}' already exists");
+
+                //check if stationDTO.AtelierLabel exists
+                Atelier existingAtelierByLabel = await _mediator.Send(new GetByGenericQuery<Atelier>(atelier => atelier.AtelierLabel == stationDTO.AtelierLabel));
+                if (existingAtelierByLabel == null)
+                    return NotFound($"Atelier with label '{stationDTO.AtelierLabel}' not found");
+
                 Station station = _mapper.Map<Station>(stationDTO);
-
+                
                 station.StationId = id;
-
                 station.IsActif = existingStationById.IsActif;   //IsActif can only be changed in ActivateStation fct
+                station.FkAtelier = existingAtelierByLabel.AtelierId;
 
                 PutGenericCommand<Station> command = new PutGenericCommand<Station>(station);
                 string mediatorResponse = await _mediator.Send(command);

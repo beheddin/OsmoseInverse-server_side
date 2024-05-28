@@ -152,7 +152,7 @@ namespace Data.Migrations
             modelBuilder.Entity("Domain.Entities.Station", b =>
                 {
                     b.HasOne("Domain.Entities.Atelier", "Atelier")
-                        .WithMany("Station")
+                        .WithMany("Stations")
                         .HasForeignKey("FkAtelier")
                         .OnDelete(DeleteBehavior.SetNull);
                 });

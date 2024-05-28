@@ -25,7 +25,6 @@ namespace Domain.Entities
         #region Role
         //public Guid FkRole { get; set; }
         public Guid? FkRole { get; set; }   // nullable foreign key
-
         public virtual Role Role { get; set; }
         #endregion
 

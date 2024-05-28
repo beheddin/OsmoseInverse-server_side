@@ -19,6 +19,6 @@ namespace Domain.Entities
         public virtual Filiale Filiale { get; set; }
         #endregion
 
-        public virtual ICollection<Station> Station { get; set; }
+        public virtual ICollection<Station> Stations { get; set; }
     }
 }
