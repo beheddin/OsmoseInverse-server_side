@@ -3,6 +3,10 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.Security.Claims;
+using Domain.Entities;
+using System.Collections.Generic;
+using System.Net;
 
 namespace Domain.Services
 {
@@ -10,11 +14,15 @@ namespace Domain.Services
     {
         //private readonly string secureKey = "This is my secure key. It is a very secure key.";    //key used to encode the token
         private readonly string _secureKey;
+        private readonly string _issuer;
+        private readonly string _audience;
 
         //Inject IConfiguration to fetch the secure key from the configuration.
         public AuthService(IConfiguration configuration)
         {
             _secureKey = configuration["Jwt:SecureKey"];
+            _issuer = configuration["Jwt:Issuer"];
+            _audience = configuration["Jwt:Audience"];
         }
 
         #region Password encryption functions
@@ -30,18 +38,43 @@ namespace Domain.Services
         #endregion
 
         #region JWT(JSON Web Token) functions
-        public string GenerateToken(Guid userId)
+        //public string GenerateToken(Guid userId)
+        public string GenerateToken(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secureKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
 
-            var header = new JwtHeader(credentials);
+            ////method 1
 
-            //payload contains encoded data
-            //var payload = new JwtPayload(userId.ToString(), null, null, null, DateTime.Today.AddDays(1));   //last 24 hours
-            var payload = new JwtPayload(issuer: userId.ToString(), audience: null, claims: null, notBefore: null, expires: DateTime.UtcNow.AddDays(1), issuedAt: DateTime.UtcNow);
+            //var header = new JwtHeader(credentials);
 
-            var token = new JwtSecurityToken(header, payload);
+            ////payload contains encoded data
+            ////var payload = new JwtPayload(userId.ToString(), null, null, null, DateTime.Today.AddDays(1));   //last 24 hours
+            //var payload = new JwtPayload(issuer: userId.ToString(), audience: null, claims: null, notBefore: null, expires: DateTime.UtcNow.AddDays(1), issuedAt: DateTime.UtcNow);
+
+            //var token = new JwtSecurityToken(header, payload);
+
+            //method 2
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                //new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                 new Claim(JwtRegisteredClaimNames.Iat, ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+                new Claim("firstName", user.FirstName),
+                new Claim("lastName", user.LastName)
+            };
+
+            var token = new JwtSecurityToken(
+                //issuer: null,
+                issuer: _issuer,
+                //audience: null,
+                audience: _audience,
+                claims: claims,
+                notBefore: DateTime.UtcNow,
+                expires: DateTime.UtcNow.AddDays(1),
+                signingCredentials: credentials
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
@@ -58,16 +91,33 @@ namespace Domain.Services
                 {
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuerSigningKey = true,
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true // Ensures token hasn't expired
+
+                    //ValidateIssuer = false,
+                    //ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = _issuer,
+                    ValidAudience = _audience,
+
+                    ValidateLifetime = true, // Ensures token hasn't expired
+                    ClockSkew = TimeSpan.Zero // Optional: eliminate clock skew
                 }, out SecurityToken validatedToken);
 
                 return (JwtSecurityToken)validatedToken;
             }
-            catch (SecurityTokenException ex)
+            //catch (SecurityTokenException ex)
+            //{
+            //    // Handle specific token validation exceptions if needed
+            //    Console.WriteLine($"Token validation failed: {ex.Message}");
+            //    return null;
+            //}
+            catch (SecurityTokenExpiredException ex)
             {
-                // Handle specific token validation exceptions if needed
+                Console.WriteLine($"Token expired: {ex.Message}");
+                return null;
+            }
+            catch (SecurityTokenValidationException ex)
+            {
                 Console.WriteLine($"Token validation failed: {ex.Message}");
                 return null;
             }

@@ -10,6 +10,8 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Data.Repositories
 {
@@ -225,7 +227,8 @@ namespace Data.Repositories
                     };
 
                 //generate token
-                string token = _authService.GenerateToken(existingUser.UserId);
+                //string token = _authService.GenerateToken(existingUser.UserId);
+                string token = _authService.GenerateToken(existingUser);
 
                 return new RepositoryResponseDTO<User>
                 {
@@ -272,15 +275,20 @@ namespace Data.Repositories
                 The out Guid userId: if the parsing is successful, the resulting Guid will be stored in the variable userId.
                  */
                 //Guid userId = Guid.Parse(token.Issuer);
-                if (!Guid.TryParse(token.Issuer, out Guid userId))
+
+                var userIdClaim = token.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);  //m2
+                //if (!Guid.TryParse(token.Issuer, out Guid userId))    //m1
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))  //m2
                     return new RepositoryResponseDTO<User>
                     {
                         IsSuccessful = false,
-                        Message = "Invalid user ID format",
+                        //Message = "Invalid user ID format", //m1
+                        Message = "Invalid or missing user ID in token claims", //m2
                         Entity = null
                     };
 
-                User existingUser = await _context.Users.SingleOrDefaultAsync(user => user.UserId == userId);
+                //User existingUser = await _context.Users.SingleOrDefaultAsync(user => user.UserId == userId);
+                User existingUser = await _context.Users.FindAsync(userId);
 
                 if (existingUser == null)
                     return new RepositoryResponseDTO<User>

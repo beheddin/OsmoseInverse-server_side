@@ -369,13 +369,6 @@ namespace API.Controllers
         {
             try
             {
-                // Validate the input
-                if (loginDTO == null)
-                {
-                    return BadRequest(new { message = "Login data is null" });
-                }
-
-                //RepositoryResponseDTO<User> response = await _repository.Login(loginDTO);
                 RepositoryResponseDTO<User> response = await _repository.Login(loginDTO);
 
                 // handle failure
@@ -392,7 +385,13 @@ namespace API.Controllers
                 // Set the JWT cookie in the response
                 //Response.Cookies.Append("jwt", token, new CookieOptions { HttpOnly = true });
                 //Response.Cookies.Append("jwt", token, new CookieOptions { HttpOnly = false });
-                Response.Cookies.Append("jwt", response.Token, new CookieOptions { HttpOnly = true, IsEssential = true, Secure = true, SameSite = SameSiteMode.None });
+                Response.Cookies.Append("jwt", response.Token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    IsEssential = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None
+                });
 
                 //if successful, return response (which contains the token + the user)
                 return Ok(response);
@@ -422,33 +421,42 @@ namespace API.Controllers
         [HttpGet("authenticatedUser")]
         public async Task<ActionResult<User>> GetAuthenticatedUser()
         {
-            string jwt = Request.Cookies["jwt"];    // Get the token from the JWT cookie
+            try
+            {
+                string jwt = Request.Cookies["jwt"];    // Get the token from the JWT cookie
 
-            RepositoryResponseDTO<User> response = await _repository.GetAuthenticatedUser(jwt);
+                RepositoryResponseDTO<User> response = await _repository.GetAuthenticatedUser(jwt);
 
-            //handle failure
-            if (!response.IsSuccessful)
-                switch (response.Message)
-                {
-                    //if "JWT token is missing" or "Invalid token"
-                    case "JWT token is missing":
-                    case "Invalid token":
-                        return Unauthorized(new { message = response.Message });
+                //handle failure
+                if (!response.IsSuccessful)
+                    switch (response.Message)
+                    {
+                        //if "JWT token is missing" or "Invalid token"
+                        case "JWT token is missing":
+                        case "Invalid token":
+                            return Unauthorized(new { message = response.Message });
 
-                    case "User not found":
-                        return NotFound(new { message = response.Message });
+                        case "User not found":
+                            return NotFound(new { message = response.Message });
 
-                    case "Invalid user ID format":
-                        return BadRequest(new { message = response.Message });
+                        //case "Invalid user ID format":
+                        case "Invalid or missing user ID in token claims":
+                            return BadRequest(new { message = response.Message });
 
-                    default:
-                        // Handle other specific messages or default to internal server error
-                        _logger.LogError("Unexpected error: {0}", response.Message);
-                        return StatusCode(500, new { message = response.Message });
-                }
+                        default:
+                            // Handle other specific messages or default to internal server error
+                            _logger.LogError("Unexpected error: {0}", response.Message);
+                            return StatusCode(500, new { message = response.Message });
+                    }
 
-            //if successful, return the authenticated user 
-            return Ok(response.Entity);
+                //if successful, return the authenticated user 
+                return Ok(response.Entity);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception: An error occurred while handling GetAuthenticatedUser.");
+                return StatusCode(500, new { message = $"An unexpected error occurred while handling GetAuthenticatedUser: {ex.Message}" });
+            }
         }
 
         /**/
