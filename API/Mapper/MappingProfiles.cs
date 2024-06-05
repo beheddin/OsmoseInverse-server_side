@@ -37,8 +37,8 @@ namespace API.Mapper
            .ForMember(dest => dest.RoleLabel, opt => opt.MapFrom(src => src.RoleLabel.ToString()))
            .ReverseMap();
 
-            //CreateMap<Filiale, FilialeDTO>()
-            //.ReverseMap();
+            CreateMap<Filiale, FilialeDTO>()
+            .ReverseMap();
 
             CreateMap<Atelier, AtelierDTO>()
             //.ForMember(dest => dest.FilialeLabel, opt => opt.MapFrom(src => src.Filiale.FilialeLabel))

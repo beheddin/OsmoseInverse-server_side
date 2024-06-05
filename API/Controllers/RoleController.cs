@@ -106,7 +106,7 @@ namespace API.Controllers
         {
             try
             {
-                RepositoryResponseDTO<Role> response = await _repository.CreateRole(roleDTO);
+                EntityResponseDTO<Role> response = await _repository.CreateRole(roleDTO);
 
                 if (!response.IsSuccessful)
                     switch (response.Message)
@@ -142,7 +142,7 @@ namespace API.Controllers
         {
             try
             {
-                RepositoryResponseDTO<Role> response = await _repository.UpdateRole(id, roleDTO);
+                EntityResponseDTO<Role> response = await _repository.UpdateRole(id, roleDTO);
 
                 if (!response.IsSuccessful)
                     switch (response.Message)

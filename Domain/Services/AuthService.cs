@@ -62,7 +62,7 @@ namespace Domain.Services
                 //new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                  new Claim(JwtRegisteredClaimNames.Iat, ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
                 new Claim("firstName", user.FirstName),
-                new Claim("lastName", user.LastName)
+                new Claim("lastName", user.LastName),
             };
 
             var token = new JwtSecurityToken(
@@ -92,10 +92,10 @@ namespace Domain.Services
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuerSigningKey = true,
 
-                    //ValidateIssuer = false,
-                    //ValidateAudience = false,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    //ValidateIssuer = true,
+                    //ValidateAudience = true,
                     ValidIssuer = _issuer,
                     ValidAudience = _audience,
 
@@ -105,12 +105,6 @@ namespace Domain.Services
 
                 return (JwtSecurityToken)validatedToken;
             }
-            //catch (SecurityTokenException ex)
-            //{
-            //    // Handle specific token validation exceptions if needed
-            //    Console.WriteLine($"Token validation failed: {ex.Message}");
-            //    return null;
-            //}
             catch (SecurityTokenExpiredException ex)
             {
                 Console.WriteLine($"Token expired: {ex.Message}");

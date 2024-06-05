@@ -33,8 +33,8 @@ namespace Data.Repositories
         }
 
         #region CRUD functions
-        //public async Task<RepositoryResponseDTO<User>> CreateUser(User user)
-        public async Task<RepositoryResponseDTO<User>> CreateUser(UserDTO userDTO)
+        //public async Task<EntityResponseDTO<User>> CreateUser(User user)
+        public async Task<EntityResponseDTO<User>> CreateUser(UserDTO userDTO)
         //public async Task<User> CreateUser(User user)
         {
             try
@@ -50,10 +50,10 @@ namespace Data.Repositories
                 */
 
                 if (existingUserByCin != null)
-                    return new RepositoryResponseDTO<User>
+                    return new EntityResponseDTO<User>
                     {
                         IsSuccessful = false,
-                        Message = "User already exists",
+                        Message = "A user with a similar CIN already exists",
                         Entity = null
                     };
 
@@ -61,7 +61,7 @@ namespace Data.Repositories
                 RoleType roleType;
 
                 if (!Enum.TryParse(userDTO.RoleLabel, true, out roleType))  //userDTO.RoleLabel: string
-                    return new RepositoryResponseDTO<User>
+                    return new EntityResponseDTO<User>
                     {
                         IsSuccessful = false,
                         Message = "Invalid role label",
@@ -71,7 +71,7 @@ namespace Data.Repositories
                 Role existingRoleByLabel = await _context.Roles.SingleOrDefaultAsync(role => role.RoleLabel == roleType);
 
                 if (existingRoleByLabel == null)
-                    return new RepositoryResponseDTO<User>
+                    return new EntityResponseDTO<User>
                     {
                         IsSuccessful = false,
                         Message = "Role not found",
@@ -81,7 +81,7 @@ namespace Data.Repositories
                 // check if userDTO.FilialeLabel exists
                 Filiale existingFilialeByLabel = await _context.Filiales.SingleOrDefaultAsync(filiale => filiale.FilialeLabel == userDTO.FilialeLabel);
                 if (existingFilialeByLabel == null)
-                    return new RepositoryResponseDTO<User>
+                    return new EntityResponseDTO<User>
                     {
                         IsSuccessful = false,
                         Message = "Filiale not found",
@@ -100,7 +100,7 @@ namespace Data.Repositories
 
                 //await _context.SaveChangesAsync();
 
-                return new RepositoryResponseDTO<User>
+                return new EntityResponseDTO<User>
                 {
                     IsSuccessful = true,
                     //Message = "User created successfully",    //the success msg is returned by AddAsync(T entity) in GenericRepository
@@ -117,14 +117,14 @@ namespace Data.Repositories
             // Handle other unexpected exceptions
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception: An unexpected error occurred while adding the user.");
-                throw new Exception($"An unexpected error occurred while adding the user: {ex.Message}", ex);
+                _logger.LogError(ex, "Exception: An error occurred while handling CreateUser");
+                throw new Exception($"An unexpected error occurred while handling CreateUser: {ex.Message}", ex);
             }
         }
 
         /**/
 
-        public async Task<RepositoryResponseDTO<User>> UpdateUser([FromRoute] Guid id, [FromBody] UserDTO userDTO)
+        public async Task<EntityResponseDTO<User>> UpdateUser([FromRoute] Guid id, [FromBody] UserDTO userDTO)
         //public async Task<User> UpdateUser(Guid id, User user)
         {
             try
@@ -133,10 +133,10 @@ namespace Data.Repositories
                 User existingUserById = await _context.Users.SingleOrDefaultAsync(user => user.UserId == id);
 
                 if (existingUserById == null)
-                    return new RepositoryResponseDTO<User>
+                    return new EntityResponseDTO<User>
                     {
                         IsSuccessful = false,
-                        Message = "User not found",
+                        Message = "User with the provided ID not found",
                         Entity = null
                     };
 
@@ -144,7 +144,7 @@ namespace Data.Repositories
                 RoleType roleType;
 
                 if (!Enum.TryParse(userDTO.RoleLabel, true, out roleType))  //userDTO.RoleLabel: string
-                    return new RepositoryResponseDTO<User>
+                    return new EntityResponseDTO<User>
                     {
                         IsSuccessful = false,
                         Message = "Invalid role label",
@@ -155,7 +155,7 @@ namespace Data.Repositories
                 Role existingRoleByLabel = await _context.Roles.SingleOrDefaultAsync(role => role.RoleLabel == roleType);
 
                 if (existingRoleByLabel == null)
-                    return new RepositoryResponseDTO<User>
+                    return new EntityResponseDTO<User>
                     {
                         IsSuccessful = false,
                         Message = "Role not found",
@@ -165,7 +165,7 @@ namespace Data.Repositories
                 // check if userDTO.FilialeLabel exists
                 Filiale existingFilialeByLabel = await _context.Filiales.SingleOrDefaultAsync(filiale => filiale.FilialeLabel == userDTO.FilialeLabel);
                 if (existingFilialeByLabel == null)
-                    return new RepositoryResponseDTO<User>
+                    return new EntityResponseDTO<User>
                     {
                         IsSuccessful = false,
                         Message = "Filiale not found",
@@ -180,28 +180,28 @@ namespace Data.Repositories
                 user.FkRole = existingRoleByLabel.RoleId;  //set the role foreign key in user
                 user.FkFiliale = existingFilialeByLabel.FilialeId;   //set the filiale foreign key in user
 
-                return new RepositoryResponseDTO<User>
+                return new EntityResponseDTO<User>
                 {
                     IsSuccessful = true,
-                    //Message = "User updated successfully",    //the success msg is returned by UpdateAsync(T entity) in GenericRepository
+                    //Message = "User successfully updated",    //the success msg is returned by UpdateAsync(T entity) in GenericRepository
                     Entity = user
                 };
             }
             catch (DbUpdateException ex)
             {
-                _logger.LogError(ex, "DbUpdateException: Failed to update the user due to a database update error.");
+                _logger.LogError(ex, "DbUpdateException: Failed to update the user due to a database update error");
                 throw new DbUpdateException($"Failed to update due to a database update error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception: An unexpected error occurred while updating the user.");
-                throw new Exception($"An unexpected error occurred while updating the user: {ex.Message}", ex);
+                _logger.LogError(ex, "Exception: An error occurred while handling UpdateUser");
+                throw new Exception($"An unexpected error occurred while handling UpdateUser: {ex.Message}", ex);
             }
         }
         #endregion
 
         #region Authentication functions
-        public async Task<RepositoryResponseDTO<User>> Login(LoginDTO loginDTO)
+        public async Task<LoginResponseDTO> Login(LoginDTO loginDTO)
         {
             try
             {
@@ -209,8 +209,8 @@ namespace Data.Repositories
                 User existingUser = await _context.Users.SingleOrDefaultAsync(user => user.Cin == loginDTO.Cin);
 
                 // Validate user credentials
-                if (existingUser == null || !_authService.VerifyPassword(loginDTO.Password, existingUser.Password)) //(password, hashedPassword)                                                                //return (false, "Invalid credentials",                                                              //return new RepositoryResponseDTO<User> { IsSuccessful = false, Message = "Invalid credentials", Token = null };
-                    return new RepositoryResponseDTO<User>
+                if (existingUser == null || !_authService.VerifyPassword(loginDTO.Password, existingUser.Password)) //(password, hashedPassword)                                                                //return (false, "Invalid credentials",                                                              //return new EntityResponseDTO<User> { IsSuccessful = false, Message = "Invalid credentials", Token = null };
+                    return new LoginResponseDTO
                     {
                         IsSuccessful = false,
                         Message = "Invalid credentials",
@@ -219,7 +219,7 @@ namespace Data.Repositories
 
                 // Check if user access is denied
                 if (!existingUser.Access)
-                    return new RepositoryResponseDTO<User>
+                    return new LoginResponseDTO
                     {
                         IsSuccessful = false,
                         Message = "Access denied",
@@ -230,37 +230,36 @@ namespace Data.Repositories
                 //string token = _authService.GenerateToken(existingUser.UserId);
                 string token = _authService.GenerateToken(existingUser);
 
-                return new RepositoryResponseDTO<User>
+                return new LoginResponseDTO
                 {
                     IsSuccessful = true,
                     Message = "User successfully logged in",
                     Token = token,
-                    //Entity = existingUser we don't need to return the authenticated user
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception: An unexpected error occurred while logging the user.");
-                throw new Exception($"An unexpected error occurred while logging the user: {ex.Message}", ex);
+                _logger.LogError(ex, "Exception: An unexpected error occurred while handling Login");
+                throw new Exception($"An unexpected error occurred while handling Login: {ex.Message}", ex);
             }
         }
 
         /**/
 
-        public async Task<RepositoryResponseDTO<User>> GetAuthenticatedUser(string jwt)
+        public async Task<EntityResponseDTO<User>> GetAuthenticatedUser(string jwt)
         {
-            if (string.IsNullOrEmpty(jwt))
-                return new RepositoryResponseDTO<User>
-                {
-                    IsSuccessful = false,
-                    Message = "JWT token is missing",
-                    Entity = null
-                };
+            //if (string.IsNullOrEmpty(jwt))
+            //    return new EntityResponseDTO<User>
+            //    {
+            //        IsSuccessful = false,
+            //        Message = "JWT token is missing",
+            //        Entity = null
+            //    };
 
             var token = _authService.VerifyToken(jwt);
 
             if (token == null)
-                return new RepositoryResponseDTO<User>
+                return new EntityResponseDTO<User>
                 {
                     IsSuccessful = false,
                     Message = "Invalid token",
@@ -279,7 +278,7 @@ namespace Data.Repositories
                 var userIdClaim = token.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);  //m2
                 //if (!Guid.TryParse(token.Issuer, out Guid userId))    //m1
                 if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))  //m2
-                    return new RepositoryResponseDTO<User>
+                    return new EntityResponseDTO<User>
                     {
                         IsSuccessful = false,
                         //Message = "Invalid user ID format", //m1
@@ -291,14 +290,14 @@ namespace Data.Repositories
                 User existingUser = await _context.Users.FindAsync(userId);
 
                 if (existingUser == null)
-                    return new RepositoryResponseDTO<User>
+                    return new EntityResponseDTO<User>
                     {
                         IsSuccessful = false,
                         Message = "User not found",
                         Entity = null
                     };
 
-                return new RepositoryResponseDTO<User>
+                return new EntityResponseDTO<User>
                 {
                     IsSuccessful = true,
                     Message = "User found",
@@ -307,44 +306,35 @@ namespace Data.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception: An error occurred while retrieving the authenticated user.");
-                throw new Exception($"An unexpected error occurred while retrieving the authenticated user: {ex.Message}", ex);
+                _logger.LogError(ex, "Exception: An error occurred while handling GetAuthenticatedUser");
+                throw new Exception($"An error occurred while handling GetAuthenticatedUser: {ex.Message}", ex);
             }
         }
 
         /**/
 
-        //public async Task<RepositoryResponseDTO<User>> ChangePassword(Guid id, string newPassword)
-        public async Task<RepositoryResponseDTO<User>> ChangePassword(Guid id, string newPassword)
+        //public async Task<EntityResponseDTO<User>> ChangePassword(Guid id, string newPassword)
+        public async Task<MessageResponseDTO> ChangePassword(Guid id, string newPassword)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(newPassword))
-                    return new RepositoryResponseDTO<User>
-                    {
-                        IsSuccessful = false,
-                        Message = "New password cannot be empty",
-                    };
-
                 User existingUser = await _context.Users.SingleOrDefaultAsync(user => user.UserId == id);
 
                 if (existingUser == null)
-                    return new RepositoryResponseDTO<User>
+                    return new MessageResponseDTO
                     {
                         IsSuccessful = false,
                         Message = "User not found",
-                        //Entity = null,
                     };
 
                 //new pwd & old pwd must be different
                 bool passwordIsIdentical = _authService.VerifyPassword(newPassword, existingUser.Password); //(password, hashedPassword)
 
                 if (passwordIsIdentical)
-                    return new RepositoryResponseDTO<User>
+                    return new MessageResponseDTO
                     {
                         IsSuccessful = false,
                         Message = "New password and old password must be different",
-                        //Entity = null,
                     };
 
                 //hash the new pwd
@@ -354,11 +344,10 @@ namespace Data.Repositories
                 bool newHashedPasswordIsValid = _authService.VerifyPassword(newPassword, newHashedPassword);
 
                 if (!newHashedPasswordIsValid)
-                    return new RepositoryResponseDTO<User>
+                    return new MessageResponseDTO
                     {
                         IsSuccessful = false,
                         Message = "New password hashing is invalid",
-                        //Entity = null,
                     };
 
                 existingUser.Password = newHashedPassword;  //update the user pwd
@@ -367,11 +356,10 @@ namespace Data.Repositories
                 _context.Users.Update(existingUser);
                 await _context.SaveChangesAsync();
 
-                return new RepositoryResponseDTO<User>
+                return new MessageResponseDTO
                 {
                     IsSuccessful = true,
-                    Message = "Password changed successfully",
-                    //User = existingUser,
+                    Message = "Password successfully changed",
                 };
             }
             catch (DbUpdateException ex)
@@ -381,53 +369,43 @@ namespace Data.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception: An unexpected error occurred while changing the password.");
-                throw new Exception($"An unexpected error occurred while changing the password: {ex.Message}", ex);
+                _logger.LogError(ex, "Exception: An error occurred while handling ChangePassword");
+                throw new Exception($"An error occurred while handling ChangePassword: {ex.Message}", ex);
             }
         }
 
-        public async Task<RepositoryResponseDTO<User>> BlockUser(Guid id)
-        {
-            try
-            {
-                //verify if current user is a super-user
-                //User superUser = _userService.GetBy(superUserId);
-                //string roleName = await _context.GetRoleNameByRoleIdAsync(superUser.RoleId);
-                //if the superUser RoleName IS NOT "SuperAdmin"
-                //if (!string.Equals(roleName, "SuperAdmin", StringComparison.Ordinal))
-                //return BadRequest();
+        //public async Task<MessageResponseDTO> BlockUser(string cin)
+        //{
+        //    try
+        //    {
+        //        User user = await _context.Users.SingleOrDefaultAsync(user => user.Cin == cin);
 
-                // get the user that we want to block/allow
-                User user = await _context.Users.SingleOrDefaultAsync(user => user.UserId == id);
+        //        if (user == null)
+        //            return new MessageResponseDTO
+        //            {
+        //                IsSuccessful = false,
+        //                Message = "User not found",
+        //            };
 
-                if (user == null)
-                    return new RepositoryResponseDTO<User>
-                    {
-                        IsSuccessful = false,
-                        Message = "User not found",
-                        //Entity = null,
-                    };
+        //        // Toggle the user's access status
+        //        user.Access = !user.Access;
 
-                // Toggle the user's access status
-                user.Access = !user.Access;
+        //        // Save the changes to the database
+        //        _context.Users.Update(user);
+        //        await _context.SaveChangesAsync();
 
-                // Save the changes to the database
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-
-                return new RepositoryResponseDTO<User>
-                {
-                    IsSuccessful = true,
-                    Message = "User access status updated successfully",
-                    //User = user,
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception: An unexpected error occurred while changing the access status of the user.");
-                throw new Exception($"An unexpected error occurred while changing the access status of the user: {ex.Message}", ex);
-            }
-        }
+        //        return new MessageResponseDTO
+        //        {
+        //            IsSuccessful = true,
+        //            Message = "User access status successfully updated",
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Exception: An unexpected error occurred while handling BlockUser");
+        //        throw new Exception($"An unexpected error occurred while handling BlockUser: {ex.Message}", ex);
+        //    }
+        //}
         #endregion
     }
 }

@@ -146,7 +146,7 @@ namespace OsmoseInverse
 
             });
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();    //the server redirects HTTP requests to HTTPS. comment this line when using HTTP endpoints (e.g. 'http://localhost:5000/Users')
             app.UseRouting();
 
             //CORS

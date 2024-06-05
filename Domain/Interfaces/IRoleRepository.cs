@@ -7,7 +7,7 @@ namespace Domain.Interfaces
 {
     public interface IRoleRepository
     {
-        Task<RepositoryResponseDTO<Role>> CreateRole(RoleDTO roleDTO);
-        Task<RepositoryResponseDTO<Role>> UpdateRole(Guid id, RoleDTO roleDTO);
+        Task<EntityResponseDTO<Role>> CreateRole(RoleDTO roleDTO);
+        Task<EntityResponseDTO<Role>> UpdateRole(Guid id, RoleDTO roleDTO);
     }
 }

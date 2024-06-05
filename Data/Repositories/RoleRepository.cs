@@ -28,7 +28,7 @@ namespace Data.Repositories
             _mapper = mapper;
         }
 
-        public async Task<RepositoryResponseDTO<Role>> CreateRole([FromBody] RoleDTO roleDTO)
+        public async Task<EntityResponseDTO<Role>> CreateRole([FromBody] RoleDTO roleDTO)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace Data.Repositories
                 RoleType roleType;
 
                 if (!Enum.TryParse(roleDTO.RoleLabel, true, out roleType))
-                    return new RepositoryResponseDTO<Role>
+                    return new EntityResponseDTO<Role>
                     {
                         IsSuccessful = false,
                         Message = "Invalid role label",
@@ -47,7 +47,7 @@ namespace Data.Repositories
                 Role existingRole = await _context.Roles.FirstOrDefaultAsync(role => role.RoleLabel == roleType);
 
                 if (existingRole != null)
-                    return new RepositoryResponseDTO<Role>
+                    return new EntityResponseDTO<Role>
                     {
                         IsSuccessful = false,
                         Message = "Role already exists",
@@ -59,7 +59,7 @@ namespace Data.Repositories
 
                 role.RoleLabel = roleType;
 
-                return new RepositoryResponseDTO<Role>
+                return new EntityResponseDTO<Role>
                 {
                     IsSuccessful = true,
                     //Message = "User created successfully",    //the success msg is returned by AddAsync(T entity) in GenericRepository
@@ -80,7 +80,7 @@ namespace Data.Repositories
             }
         }
 
-        public async Task<RepositoryResponseDTO<Role>> UpdateRole([FromRoute] Guid id, [FromBody] RoleDTO roleDTO)
+        public async Task<EntityResponseDTO<Role>> UpdateRole([FromRoute] Guid id, [FromBody] RoleDTO roleDTO)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace Data.Repositories
                 Role existingRoleById = await _context.Roles.FirstOrDefaultAsync(role => role.RoleId == id);
 
                 if (existingRoleById == null)
-                    return new RepositoryResponseDTO<Role>
+                    return new EntityResponseDTO<Role>
                     {
                         IsSuccessful = false,
                         Message = "Role not found",
@@ -99,7 +99,7 @@ namespace Data.Repositories
                 RoleType roleType;
 
                 if (!Enum.TryParse(roleDTO.RoleLabel, true, out roleType))
-                    return new RepositoryResponseDTO<Role>
+                    return new EntityResponseDTO<Role>
                     {
                         IsSuccessful = false,
                         Message = "Invalid role label",
@@ -110,7 +110,7 @@ namespace Data.Repositories
                 Role existingRoleByLabel = await _context.Roles.FirstOrDefaultAsync(role => role.RoleLabel == roleType);
 
                 if (existingRoleByLabel != null)
-                    return new RepositoryResponseDTO<Role>
+                    return new EntityResponseDTO<Role>
                     {
                         IsSuccessful = false,
                         Message = "Role already exists",
@@ -124,7 +124,7 @@ namespace Data.Repositories
 
                 role.RoleLabel = roleType;
 
-                return new RepositoryResponseDTO<Role>
+                return new EntityResponseDTO<Role>
                 {
                     IsSuccessful = true,
                     //Message = "User created successfully",    //the success msg is returned by AddAsync(T entity) in GenericRepository
