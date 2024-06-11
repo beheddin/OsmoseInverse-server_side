@@ -13,6 +13,7 @@ using Domain.DataTransferObjects;
 using Domain.Queries;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers
 {
@@ -43,6 +44,9 @@ namespace API.Controllers
                 GetAllGenericQuery<Station> query = new GetAllGenericQuery<Station>(includes: query => query.Include(station => station.Atelier));
                 IEnumerable<Station> stations = await _mediator.Send(query);
 
+                if (stations.IsNullOrEmpty())
+                    return NotFound(new { message = "No Stations were found" });
+
                 IEnumerable<StationDTO> stationsDTO = stations.Select(station => _mapper.Map<StationDTO>(station)).ToList();
 
                 return Ok(stationsDTO);
@@ -64,7 +68,7 @@ namespace API.Controllers
                 Station station = await _mediator.Send(query);
 
                 if (station == null)
-                    return NotFound("Station not found");
+                    return NotFound(new MessageResponseDTO { Message = $"Station with ID '{id}' not found" });
 
                 StationDTO stationDTO = _mapper.Map<StationDTO>(station);
 
@@ -78,31 +82,31 @@ namespace API.Controllers
         }
 
         [HttpPost("post")]
-        public async Task<ActionResult<string>> PostStation([FromBody] StationDTO stationDTO)
+        public async Task<ActionResult<MessageResponseDTO>> PostStation([FromBody] StationDTO stationDTO)
         {
             try
             {
                 // check if the station already exists based on its label
                 GetByGenericQuery<Station> query = new GetByGenericQuery<Station>(station => station.NomStation == stationDTO.NomStation);
-                Station existingStationByLabel = await _mediator.Send(query);
+                Station existingStationByNom = await _mediator.Send(query);
 
-                if (existingStationByLabel != null)
-                    return Conflict($"Station with label '{stationDTO.NomStation}' already exists");
+                if (existingStationByNom != null)
+                    return Conflict(new MessageResponseDTO { Message = $"Station with Nom '{stationDTO.NomStation}' already exists" });
 
 
                 //check if stationDTO.NomAtelier exists
-                Atelier existingAtelierByLabel = await _mediator.Send(new GetByGenericQuery<Atelier>(atelier => atelier.NomAtelier == stationDTO.NomAtelier));
-                if (existingAtelierByLabel == null)
-                    return NotFound($"Atelier with label '{stationDTO.NomAtelier}' not found");
+                Atelier existingAtelierByNom = await _mediator.Send(new GetByGenericQuery<Atelier>(atelier => atelier.NomAtelier == stationDTO.NomAtelier));
+                if (existingAtelierByNom == null)
+                    return NotFound(new MessageResponseDTO { Message = $"Atelier with Nom '{stationDTO.NomAtelier}' not found" });
 
                 Station station = _mapper.Map<Station>(stationDTO);
 
-                station.FkAtelier = existingAtelierByLabel.IdAtelier;
+                station.FkAtelier = existingAtelierByNom.IdAtelier;
 
                 PostGenericCommand<Station> command = new PostGenericCommand<Station>(station);
                 string mediatorResponse = await _mediator.Send(command);
 
-                return Ok(mediatorResponse);
+                return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {
@@ -112,7 +116,7 @@ namespace API.Controllers
         }
 
         [HttpPut("put/{id}")]
-        public async Task<ActionResult<string>> PutStation([FromRoute] Guid id, [FromBody] StationDTO stationDTO)
+        public async Task<ActionResult<MessageResponseDTO>> PutStation([FromRoute] Guid id, [FromBody] StationDTO stationDTO)
         {
             try
             {
@@ -121,31 +125,31 @@ namespace API.Controllers
                 Station existingStationById = await _mediator.Send(query);
 
                 if (existingStationById == null)
-                    return NotFound($"Station with id '{id}' not found");
+                    return NotFound(new MessageResponseDTO { Message = $"Station with ID '{id}' not found" });
 
                 // check if another station with the same label as stationDTO.NomStation exists
-                GetByGenericQuery<Station> queryByLabel = new GetByGenericQuery<Station>(
+                GetByGenericQuery<Station> queryByNom = new GetByGenericQuery<Station>(
                     station => station.NomStation == stationDTO.NomStation && station.IdStation != id);
-                Station existingStationByLabel = await _mediator.Send(queryByLabel);
+                Station existingStationByNom = await _mediator.Send(queryByNom);
 
-                if (existingStationByLabel != null)
-                    return Conflict($"Station with label '{stationDTO.NomStation}' already exists");
+                if (existingStationByNom != null)
+                    return Conflict(new MessageResponseDTO { Message = $"Station with Nom '{stationDTO.NomStation}' already exists" });
 
                 //check if stationDTO.NomAtelier exists
-                Atelier existingAtelierByLabel = await _mediator.Send(new GetByGenericQuery<Atelier>(atelier => atelier.NomAtelier == stationDTO.NomAtelier));
-                if (existingAtelierByLabel == null)
-                    return NotFound($"Atelier with label '{stationDTO.NomAtelier}' not found");
+                Atelier existingAtelierByNom = await _mediator.Send(new GetByGenericQuery<Atelier>(atelier => atelier.NomAtelier == stationDTO.NomAtelier));
+                if (existingAtelierByNom == null)
+                    return NotFound(new MessageResponseDTO { Message = $"Atelier with Nom '{stationDTO.NomAtelier}' not found" });
 
                 Station station = _mapper.Map<Station>(stationDTO);
 
                 station.IdStation = id;
                 station.IsActif = existingStationById.IsActif;   //IsActif can only be changed in ActivateStation fct
-                station.FkAtelier = existingAtelierByLabel.IdAtelier;
+                station.FkAtelier = existingAtelierByNom.IdAtelier;
 
                 PutGenericCommand<Station> command = new PutGenericCommand<Station>(station);
                 string mediatorResponse = await _mediator.Send(command);
 
-                return Ok(mediatorResponse);
+                return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {
@@ -155,7 +159,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<ActionResult<string>> DeleteStation([FromRoute] Guid id)
+        public async Task<ActionResult<MessageResponseDTO>> DeleteStation([FromRoute] Guid id)
         {
             try
             {
@@ -164,11 +168,11 @@ namespace API.Controllers
                 Station station = await _mediator.Send(query);
 
                 if (station == null)
-                    return NotFound($"Station with id '{id}' not found");
+                    return NotFound(new MessageResponseDTO { Message = $"Station with id '{id}' not found" });
 
                 string mediatorResponse = await _mediator.Send(new DeleteGenericCommand<Station>(id));
 
-                return Ok(mediatorResponse);
+                return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {
@@ -178,29 +182,29 @@ namespace API.Controllers
         }
 
         //only for supercomptes
-        [HttpPut("activateStation/{id}")]
-        public async Task<ActionResult<string>> ActivateStation([FromRoute] Guid id)
+        [HttpPut("activateStation/{code}")]
+        public async Task<ActionResult<MessageResponseDTO>> ActivateStation([FromRoute] string code)
         {
             try
             {
                 //check if id is valid
-                GetByGenericQuery<Station> query = new GetByGenericQuery<Station>(station => station.IdStation == id);
+                GetByGenericQuery<Station> query = new GetByGenericQuery<Station>(station => station.CodeStation == code);
                 Station station = await _mediator.Send(query);
 
                 if (station == null)
-                    return NotFound($"Station with id '{id}' don't exist");
+                    return NotFound(new MessageResponseDTO { Message = $"Station with Code '{code}' not found" });
 
                 // Toggle the station's status
                 station.IsActif = !station.IsActif;
 
                 var mediatorResponse = await _mediator.Send(new PutGenericCommand<Station>(station));
 
-                return Ok(mediatorResponse);
+                return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating the compte's access status");
-                return StatusCode(500, new { message = "An error occurred while processing your request" });
+                _logger.LogError(ex, "An error occurred while handling ActivateStation.");
+                throw new Exception($"An unexpected error occurred while handling ActivateStation: {ex.Message}", ex);
             }
         }
     }

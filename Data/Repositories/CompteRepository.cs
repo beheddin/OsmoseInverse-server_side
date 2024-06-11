@@ -53,7 +53,7 @@ namespace Data.Repositories
                     return new EntityResponseDTO<Compte>
                     {
                         IsSuccessful = false,
-                        Message = "A compte with a similar CIN already exists",
+                        Message = "A Compte with a similar CIN already exists",
                         Entity = null
                     };
 
@@ -64,7 +64,7 @@ namespace Data.Repositories
                     return new EntityResponseDTO<Compte>
                     {
                         IsSuccessful = false,
-                        Message = "Invalid role label",
+                        Message = "Invalid NomRole",
                         Entity = null
                     };
 
@@ -117,7 +117,7 @@ namespace Data.Repositories
             // Handle other unexpected exceptions
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception: An error occurred while handling CreateCompte");
+                _logger.LogError(ex, "Exception: An error occurred while handling CreateCompte.");
                 throw new Exception($"An unexpected error occurred while handling CreateCompte: {ex.Message}", ex);
             }
         }
@@ -147,7 +147,7 @@ namespace Data.Repositories
                     return new EntityResponseDTO<Compte>
                     {
                         IsSuccessful = false,
-                        Message = "Invalid role label",
+                        Message = "Invalid NomRole",
                         Entity = null
                     };
 
@@ -194,7 +194,7 @@ namespace Data.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception: An error occurred while handling UpdateCompte");
+                _logger.LogError(ex, "Exception: An error occurred while handling UpdateCompte.");
                 throw new Exception($"An unexpected error occurred while handling UpdateCompte: {ex.Message}", ex);
             }
         }
@@ -239,7 +239,7 @@ namespace Data.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception: An unexpected error occurred while handling Login");
+                _logger.LogError(ex, "Exception: An unexpected error occurred while handling Login.");
                 throw new Exception($"An unexpected error occurred while handling Login: {ex.Message}", ex);
             }
         }
@@ -306,7 +306,7 @@ namespace Data.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception: An error occurred while handling GetAuthenticatedCompte");
+                _logger.LogError(ex, "Exception: An error occurred while handling GetAuthenticatedCompte.");
                 throw new Exception($"An error occurred while handling GetAuthenticatedCompte: {ex.Message}", ex);
             }
         }
@@ -369,7 +369,7 @@ namespace Data.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception: An error occurred while handling ChangePassword");
+                _logger.LogError(ex, "Exception: An error occurred while handling ChangePassword.");
                 throw new Exception($"An error occurred while handling ChangePassword: {ex.Message}", ex);
             }
         }

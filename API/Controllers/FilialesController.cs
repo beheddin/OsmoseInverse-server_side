@@ -16,6 +16,8 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Domain.Commands;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Data;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers
 {
@@ -46,6 +48,9 @@ namespace API.Controllers
                 GetAllGenericQuery<Filiale> query = new GetAllGenericQuery<Filiale>();
                 IEnumerable<Filiale> filiales = await _mediator.Send(query);
 
+                if (filiales.IsNullOrEmpty())
+                    return NotFound(new { message = "No Filiales were found" });
+
                 IEnumerable<FilialeDTO> filialesDTO = filiales.Select(filiale => _mapper.Map<FilialeDTO>(filiale)).ToList();
 
                 return Ok(filialesDTO);
@@ -57,17 +62,18 @@ namespace API.Controllers
             }
         }
 
+        /**/
+
         [HttpGet("get/{id}")]
-        public async Task<ActionResult<FilialeDTO>> GetFilialeById([FromRoute]  Guid id)
+        public async Task<ActionResult<FilialeDTO>> GetFilialeById([FromRoute] Guid id)
         {
             try
             {
                 GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.IdFiliale == id);
-
                 Filiale filiale = await _mediator.Send(query);
 
                 if (filiale == null)
-                    return NotFound("Filiale not found");
+                    return NotFound(new { message = $"Filiale with ID '{id}' not found" });
 
                 FilialeDTO filialeDTO = _mapper.Map<FilialeDTO>(filiale);
 
@@ -80,24 +86,26 @@ namespace API.Controllers
             }
         }
 
+        /**/
+
         [HttpPost("post")]
-        public async Task<ActionResult<string>> PostFiliale([FromBody] FilialeDTO filialeDTO)
+        public async Task<ActionResult<MessageResponseDTO>> PostFiliale([FromBody] FilialeDTO filialeDTO)
         {
             try
             {
                 // check if the filiale already exists based on its label
                 GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.NomFiliale == filialeDTO.NomFiliale);
-                Filiale existingFilialeByLabel = await _mediator.Send(query);
+                Filiale existingFilialeByNom = await _mediator.Send(query);
 
-                if (existingFilialeByLabel != null)
-                    return Conflict($"Filiale with label '{filialeDTO.NomFiliale}' already exists");
+                if (existingFilialeByNom != null)
+                    return Conflict(new MessageResponseDTO { Message = $"Filiale with Nom '{filialeDTO.NomFiliale}' already exists" });
 
                 Filiale filiale = _mapper.Map<Filiale>(filialeDTO);
 
                 PostGenericCommand<Filiale> command = new PostGenericCommand<Filiale>(filiale);
                 string mediatorResponse = await _mediator.Send(command);
 
-                return Ok(mediatorResponse);
+                return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {
@@ -106,34 +114,36 @@ namespace API.Controllers
             }
         }
 
+        /**/
+
         [HttpPut("put/{id}")]
-        public async Task<ActionResult<string>> PutFiliale([FromRoute]  Guid id, [FromBody] FilialeDTO filialeDTO)
+        public async Task<ActionResult<MessageResponseDTO>> PutFiliale([FromRoute] Guid id, [FromBody] FilialeDTO filialeDTO)
         {
             try
             {
                 // check if id is valid
-                GetByGenericQuery<Filiale> queryById = new GetByGenericQuery<Filiale>(filiale => filiale.IdFiliale == id);
-                Filiale existingFilialeById = await _mediator.Send(queryById);
+                GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.IdFiliale == id);
+                Filiale existingFilialeById = await _mediator.Send(query);
 
                 if (existingFilialeById == null)
-                    return NotFound($"Filiale with id '{id}' not found");
+                    return NotFound(new MessageResponseDTO { Message = $"Filiale with ID '{id}' not found" });
 
-                // check if another filiale with the same label exists
+                // check if another filiale with the same Nom exists
                 GetByGenericQuery<Filiale> queryByLabel = new GetByGenericQuery<Filiale>(
                     filiale => filiale.NomFiliale == filialeDTO.NomFiliale && filiale.IdFiliale != id);
                 Filiale existingFilialeByLabel = await _mediator.Send(queryByLabel);
 
                 if (existingFilialeByLabel != null)
-                    return Conflict($"Filiale with label '{filialeDTO.NomFiliale}' already exists");
+                    return Conflict(new MessageResponseDTO { Message = $"Filiale with Nom '{filialeDTO.NomFiliale}' already exists" });
 
                 Filiale filiale = _mapper.Map<Filiale>(filialeDTO);
-                
+
                 filiale.IdFiliale = id;
 
                 PutGenericCommand<Filiale> command = new PutGenericCommand<Filiale>(filiale);
                 string mediatorResponse = await _mediator.Send(command);
 
-                return Ok(mediatorResponse);
+                return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {
@@ -143,7 +153,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<ActionResult<string>> DeleteFiliale([FromRoute]  Guid id)
+        public async Task<ActionResult<MessageResponseDTO>> DeleteFiliale([FromRoute] Guid id)
         {
             try
             {
@@ -152,11 +162,11 @@ namespace API.Controllers
                 Filiale filiale = await _mediator.Send(query);
 
                 if (filiale == null)
-                    return NotFound($"Filiale with id '{id}' not found");
+                    return NotFound(new MessageResponseDTO { Message = $"Filiale with ID '{id}' not found" });
 
                 string mediatorResponse = await _mediator.Send(new DeleteGenericCommand<Filiale>(id));
 
-                return Ok(mediatorResponse);
+                return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {

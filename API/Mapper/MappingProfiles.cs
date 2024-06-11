@@ -19,9 +19,11 @@ namespace API.Mapper
             //Check if src.Filiale is null before accessing NomFiliale
             .ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
             //.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale.NomFiliale))
+
+            //configures individual members of the destination type when mapping from CompteDTO to Compte
             .ReverseMap()
-            .ForMember(dest => dest.FkRole, opt => opt.Ignore())
-            .ForMember(dest => dest.FkFiliale, opt => opt.Ignore());
+            .ForMember(dest => dest.FkRole, opt => opt.Ignore())     //ignores this property during the mapping
+            .ForMember(dest => dest.FkFiliale, opt => opt.Ignore());    //ignores this property during the mapping
 
             //From CompteDTO to Compte: maps NomRole back to the Role entity by creating a new Role object with the corresponding NomRole
             //.ForMember(compte => compte.Role, opt => opt.MapFrom(compteDTO => compteDTO.NomRole != null ? new Role { NomRole = compteDTO.NomRole } : null));

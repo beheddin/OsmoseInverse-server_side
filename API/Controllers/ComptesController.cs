@@ -94,7 +94,7 @@ namespace API.Controllers
                 if (comptes.IsNullOrEmpty())
                     //return NotFound("Compte not found");
                     //return NotFound(new EntityResponseDTO<IEnumerable<CompteDTO>> { Message = "Comptes not found" });
-                    return NotFound(new { message = "Comptes not found" });
+                    return NotFound(new { message = "No Comptes were found" });
 
                 // Map Compte entities to CompteDTO using AutoMapper
                 IEnumerable<CompteDTO> comptesDTO = comptes.Select(compte => _mapper.Map<CompteDTO>(compte)).ToList();
@@ -211,11 +211,11 @@ namespace API.Controllers
                 if (!response.IsSuccessful)
                     switch (response.Message)
                     {
-                        case "A compte with a similar CIN already exists":
+                        case "A Compte with a similar CIN already exists":
                             // return Conflict($"Compte with cin '{compteDTO.CIN}' already exists");
                             return Conflict(new MessageResponseDTO { Message = response.Message });
 
-                        case "Invalid role label":
+                        case "Invalid NomRole":
                             // return NotFound($"Role with label '{compteDTO.NomRole}' does not exist");
                             return BadRequest(new MessageResponseDTO { Message = response.Message });
 
@@ -311,8 +311,8 @@ namespace API.Controllers
                     //OR
                     return response.Message switch
                     {
-                        "Compte with the provided ID not found" => NotFound(new MessageResponseDTO { Message = response.Message }),
-                        "Invalid role label" => BadRequest(new MessageResponseDTO { Message = response.Message }),
+                        "Compte with the provided ID not found" => NotFound(new MessageResponseDTO { Message = $"Compte with ID '{id}' not found" }),
+                        "Invalid NomRole" => BadRequest(new MessageResponseDTO { Message = response.Message }),
                         "Role not found" => NotFound(new MessageResponseDTO { Message = response.Message }),
                         "Filiale not found" => NotFound(new MessageResponseDTO { Message = response.Message }),
                         _ => StatusCode(500, new MessageResponseDTO { Message = "An error occurred while processing your request" }),
