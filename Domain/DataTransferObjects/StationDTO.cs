@@ -7,12 +7,12 @@ namespace Domain.DataTransferObjects
 {
     public class StationDTO
     {
-        public Guid StationId { get; set; }
-        public string StationLabel { get; set; }
-        public string StationCode { get; set; }
-        public double StationCapacity { get; set; }
-        public bool IsActif { get; set; }
+        public  Guid IdStation { get; set; }
+        public string NomStation { get; set; }
+        public string CodeStation { get; set; }
+        public double CapaciteStation { get; set; }
         public string TypeAmmortissement { get; set; }
-        public string AtelierLabel { get; set; }
+        public bool IsActif { get; set; }
+        public string NomAtelier { get; set; }
     }
 }

@@ -3,33 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Entities;
 using AutoMapper;
 using MediatR;
-using Domain.DataTransferObjects;
-using Domain.Queries;
-using Domain.Commands;
 using System.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+
+using Domain.DataTransferObjects;
+using Domain.Models;
+using Domain.Queries;
 using Domain.Interfaces;
-using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
+using Domain.Commands;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class RoleController : ControllerBase
+    public class RolesController : ControllerBase
     {
         private readonly IRoleRepository _repository;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly ILogger<RoleController> _logger;
+        private readonly ILogger<RolesController> _logger;
 
-        public RoleController(
+        public RolesController(
             IRoleRepository repository,
             IMediator mediator,
             IMapper mapper,
-            ILogger<RoleController> logger
+            ILogger<RolesController> logger
             )
         {
             _repository = repository;
@@ -49,6 +51,9 @@ namespace API.Controllers
                 GetAllGenericQuery<Role> query = new GetAllGenericQuery<Role>();
                 IEnumerable<Role> roles = await _mediator.Send(query);
 
+                if (roles.IsNullOrEmpty())
+                    return NotFound(new { message = "Roles not found" });
+
                 // Map Role entities to RoleDTO using AutoMapper
                 //var rolesDTO = roles.Select(role => _mapper.Map<RoleDTO>(role)).ToList();
                 IEnumerable<RoleDTO> rolesDTO = roles.Select(role => _mapper.Map<RoleDTO>(role)).ToList();
@@ -65,18 +70,18 @@ namespace API.Controllers
         /**/
 
         [HttpGet("get/{id}")]
-        //public async Task<RoleDTO> GetRoleById(Guid id)
+        //public async Task<RoleDTO> GetRoleById( Guid id)
         public async Task<ActionResult<RoleDTO>> GetRoleById([FromRoute] Guid id)
         {
             try
             {
-                GetByGenericQuery<Role> query = new GetByGenericQuery<Role>(role => role.RoleId == id);
+                GetByGenericQuery<Role> query = new GetByGenericQuery<Role>(role => role.IdRole == id);
                 Role role = await _mediator.Send(query);
 
                 if (role == null)
-                    return NotFound();
+                    return NotFound(new { message = $"Role with ID '{id}' not found" });
 
-                var roleDTO = _mapper.Map<RoleDTO>(role);
+                RoleDTO roleDTO = _mapper.Map<RoleDTO>(role);
 
                 return Ok(roleDTO);
             }
@@ -97,12 +102,13 @@ namespace API.Controllers
         //    _context.Role.Add(role);
         //    await _context.SaveChangesAsync();
 
-        //    return CreatedAtAction("GetRole", new { id = role.RoleId }, role);
+        //    return CreatedAtAction("GetRole", new { id = role.IdRole }, role);
         //}
 
         //public async Task<string> PostRole([FromBody] RoleDTO roleDTO)
         //public async Task<ActionResult> PostRole([FromBody] RoleDTO roleDTO)
-        public async Task<ActionResult<string>> PostRole([FromBody] RoleDTO roleDTO)
+        //public async Task<ActionResult<string>> PostRole([FromBody] RoleDTO roleDTO)
+        public async Task<ActionResult<MessageResponseDTO>> PostRole([FromBody] RoleDTO roleDTO)
         {
             try
             {
@@ -112,19 +118,23 @@ namespace API.Controllers
                     switch (response.Message)
                     {
                         case "Invalid role label":
-                            return NotFound($"Role with label '{roleDTO.RoleLabel}' is invalid");
+                            //return NotFound($"Role with label '{roleDTO.NomRole}' is invalid");
+                            return BadRequest(new MessageResponseDTO { Message = response.Message });
 
                         case "Role already exists":
-                            return Conflict($"Role with label '{roleDTO.RoleLabel}' already exists");
+                            //return Conflict($"Role with label '{roleDTO.NomRole}' already exists");
+                            return Conflict(new MessageResponseDTO { Message = response.Message });
 
                         default:
-                            return StatusCode(500, response.Message);
+                            //return StatusCode(500, response.Message);
+                            return StatusCode(500, new MessageResponseDTO { Message = "An error occurred while processing your request" });
                     }
 
                 PostGenericCommand<Role> command = new PostGenericCommand<Role>(response.Entity);
                 string mediatorResponse = await _mediator.Send(command);
 
-                return Ok(mediatorResponse);
+                //return Ok(mediatorResponse);
+                return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {
@@ -136,34 +146,36 @@ namespace API.Controllers
         /**/
 
         [HttpPut("put/{id}")]
-        //public async Task<string> PutRole(Guid id, [FromBody] RoleDTO roleDTO)
-        public async Task<ActionResult<string>> PutRole([FromRoute] Guid id, [FromBody] RoleDTO roleDTO)
-        //public async Task<ActionResult> PutRole([FromRoute] Guid id, [FromBody] string newRoleLabel)
+        //public async Task<string> PutRole( Guid id, [FromBody] RoleDTO roleDTO)
+        //public async Task<ActionResult<string>> PutRole([FromRoute] Guid id, [FromBody] RoleDTO roleDTO)
+        public async Task<ActionResult<MessageResponseDTO>> PutRole([FromRoute] Guid id, [FromBody] RoleDTO roleDTO)
         {
             try
             {
                 EntityResponseDTO<Role> response = await _repository.UpdateRole(id, roleDTO);
 
                 if (!response.IsSuccessful)
-                    switch (response.Message)
+
+                    return response.Message switch
                     {
-                        case "Role not found":
-                            return NotFound($"Role with id '{id}' not found");
+                        "Role not found" =>
+                        //NotFound($"Role with id '{id}' not found"),
+                        NotFound(new MessageResponseDTO { Message = response.Message }),
 
-                        case "Invalid role label":
-                            return NotFound($"Role with label '{roleDTO.RoleLabel}' is invalid");
+                        "Invalid role label" =>
+                        //NotFound($"Role with label '{roleDTO.NomRole}' is invalid"),
+                        BadRequest(new MessageResponseDTO { Message = response.Message }),
 
-                        case "Role already exists":
-                            return Conflict($"Role with label '{roleDTO.RoleLabel}' already exists");
+                        "Role already exists" => Conflict($"Role with label '{roleDTO.NomRole}' already exists"),
 
-                        default:
-                            return StatusCode(500, response.Message);
-                    }
+                        _ => StatusCode(500, new MessageResponseDTO { Message = "An error occurred while processing your request" }),
+                    };
 
                 PutGenericCommand<Role> command = new PutGenericCommand<Role>(response.Entity);
                 string mediatorResponse = await _mediator.Send(command);
 
-                return Ok(mediatorResponse);
+                //return Ok(mediatorResponse);
+                return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {
@@ -175,21 +187,23 @@ namespace API.Controllers
         /**/
 
         [HttpDelete("delete/{id}")]
-        //public async Task<string> DeleteRole(Guid id)
-        public async Task<ActionResult> DeleteRole([FromRoute] Guid id)
+        //public async Task<string> DeleteRole( Guid id)
+        public async Task<ActionResult<MessageResponseDTO>> DeleteRole([FromRoute] Guid id)
         {
             try
             {
                 //check if id is valid
-                GetByGenericQuery<Role> query = new GetByGenericQuery<Role>(role => role.RoleId == id);
+                GetByGenericQuery<Role> query = new GetByGenericQuery<Role>(role => role.IdRole == id);
                 Role role = await _mediator.Send(query);
 
                 if (role == null)
-                    return NotFound($"Role with id '{id}' don't exist");
+                    //return NotFound($"Role with id '{id}' don't exist");
+                    return NotFound(new MessageResponseDTO { Message = $"Role with ID '{id}' not found" });
 
                 string mediatorResponse = await _mediator.Send(new DeleteGenericCommand<Role>(id));
 
-                return Ok(mediatorResponse);
+                //return Ok(mediatorResponse);
+                return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {

@@ -1,11 +1,11 @@
-﻿using Domain.Entities;
+﻿using Domain.Models;
 using System;
 
 namespace Domain.DataTransferObjects
 {
     public class RoleDTO
     {
-        public Guid RoleId { get; set; }
-        public string RoleLabel { get; set; }
+        public  Guid IdRole { get; set; }
+        public string NomRole { get; set; }
     }
 }

@@ -9,37 +9,37 @@ namespace Data.Migrations
         {
             migrationBuilder.AddColumn<Guid>(
                 name: "FkFiliale",
-                table: "User",
+                table: "Compte",
                 nullable: true);
 
             migrationBuilder.CreateTable(
                 name: "Filiale",
                 columns: table => new
                 {
-                    FilialeId = table.Column<Guid>(nullable: false),
-                    FilialeLabel = table.Column<string>(nullable: false)
+                    IdFiliale = table.Column<Guid>(nullable: false),
+                    NomFiliale = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Filiale", x => x.FilialeId);
+                    table.PrimaryKey("PK_Filiale", x => x.IdFiliale);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Atelier",
                 columns: table => new
                 {
-                    AtelierId = table.Column<Guid>(nullable: false),
-                    AtelierLabel = table.Column<string>(nullable: false),
+                    IdAtelier = table.Column<Guid>(nullable: false),
+                    NomAtelier = table.Column<string>(nullable: false),
                     FkFiliale = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Atelier", x => x.AtelierId);
+                    table.PrimaryKey("PK_Atelier", x => x.IdAtelier);
                     table.ForeignKey(
-                        name: "FK_Atelier_Filiale_FkFiliale",
+                        name: "FkAtelier_Filiale_FkFiliale",
                         column: x => x.FkFiliale,
                         principalTable: "Filiale",
-                        principalColumn: "FilialeId",
+                        principalColumn: "IdFiliale",
                         onDelete: ReferentialAction.SetNull);
                 });
 
@@ -47,8 +47,8 @@ namespace Data.Migrations
                 name: "Station",
                 columns: table => new
                 {
-                    StationId = table.Column<Guid>(nullable: false),
-                    StationLabel = table.Column<string>(nullable: false),
+                    IdStation = table.Column<Guid>(nullable: false),
+                    NomStation = table.Column<string>(nullable: false),
                     StationCode = table.Column<string>(nullable: true),
                     StationCapacity = table.Column<double>(nullable: false),
                     IsActif = table.Column<bool>(nullable: false),
@@ -57,18 +57,18 @@ namespace Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Station", x => x.StationId);
+                    table.PrimaryKey("PK_Station", x => x.IdStation);
                     table.ForeignKey(
-                        name: "FK_Station_Atelier_FkAtelier",
+                        name: "FkStation_Atelier_FkAtelier",
                         column: x => x.FkAtelier,
                         principalTable: "Atelier",
-                        principalColumn: "AtelierId",
+                        principalColumn: "IdAtelier",
                         onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_FkFiliale",
-                table: "User",
+                name: "IX_Compte_FkFiliale",
+                table: "Compte",
                 column: "FkFiliale");
 
             migrationBuilder.CreateIndex(
@@ -82,19 +82,19 @@ namespace Data.Migrations
                 column: "FkAtelier");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_User_Filiale_FkFiliale",
-                table: "User",
+                name: "FkCompte_Filiale_FkFiliale",
+                table: "Compte",
                 column: "FkFiliale",
                 principalTable: "Filiale",
-                principalColumn: "FilialeId",
+                principalColumn: "IdFiliale",
                 onDelete: ReferentialAction.SetNull);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_User_Filiale_FkFiliale",
-                table: "User");
+                name: "FkCompte_Filiale_FkFiliale",
+                table: "Compte");
 
             migrationBuilder.DropTable(
                 name: "Station");
@@ -106,12 +106,12 @@ namespace Data.Migrations
                 name: "Filiale");
 
             migrationBuilder.DropIndex(
-                name: "IX_User_FkFiliale",
-                table: "User");
+                name: "IX_Compte_FkFiliale",
+                table: "Compte");
 
             migrationBuilder.DropColumn(
                 name: "FkFiliale",
-                table: "User");
+                table: "Compte");
         }
     }
 }

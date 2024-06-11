@@ -4,7 +4,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Claims;
-using Domain.Entities;
+using Domain.Models;
 using System.Collections.Generic;
 using System.Net;
 
@@ -38,8 +38,8 @@ namespace Domain.Services
         #endregion
 
         #region JWT(JSON Web Token) functions
-        //public string GenerateToken(Guid userId)
-        public string GenerateToken(User user)
+        //public string GenerateToken( Guid? compteId)
+        public string GenerateToken(Compte compte)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secureKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
@@ -49,20 +49,20 @@ namespace Domain.Services
             //var header = new JwtHeader(credentials);
 
             ////payload contains encoded data
-            ////var payload = new JwtPayload(userId.ToString(), null, null, null, DateTime.Today.AddDays(1));   //last 24 hours
-            //var payload = new JwtPayload(issuer: userId.ToString(), audience: null, claims: null, notBefore: null, expires: DateTime.UtcNow.AddDays(1), issuedAt: DateTime.UtcNow);
+            ////var payload = new JwtPayload(compteId.ToString(), null, null, null, DateTime.Today.AddDays(1));   //last 24 hours
+            //var payload = new JwtPayload(issuer: compteId.ToString(), audience: null, claims: null, notBefore: null, expires: DateTime.UtcNow.AddDays(1), issuedAt: DateTime.UtcNow);
 
             //var token = new JwtSecurityToken(header, payload);
 
             //method 2
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, compte.IdCompte.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 //new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                 new Claim(JwtRegisteredClaimNames.Iat, ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-                new Claim("firstName", user.FirstName),
-                new Claim("lastName", user.LastName),
+                new Claim(JwtRegisteredClaimNames.Iat, ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+                new Claim(ClaimTypes.NameIdentifier, compte.CIN),
+                new Claim("nom", compte.Nom),
             };
 
             var token = new JwtSecurityToken(

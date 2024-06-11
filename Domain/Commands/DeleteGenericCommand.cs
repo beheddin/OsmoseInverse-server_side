@@ -5,9 +5,9 @@ namespace Domain.Commands
 {
     public class DeleteGenericCommand<T> : IRequest<string> where T : class
     {
-        public Guid Id { get; }
+        public  Guid Id { get; }
 
-        public DeleteGenericCommand(Guid id)
+        public DeleteGenericCommand( Guid id)
         {
             Id = id;
         }

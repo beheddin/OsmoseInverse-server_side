@@ -7,7 +7,7 @@ namespace Domain.DataTransferObjects
 {
     public class FilialeDTO
     {
-        public Guid FilialeId { get; set; }
-        public string FilialeLabel { get; set; }
+        public  Guid IdFiliale { get; set; }
+        public string NomFiliale { get; set; }
     }
 }

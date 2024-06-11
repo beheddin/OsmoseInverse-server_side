@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,8 +8,8 @@ namespace Domain.DataTransferObjects
 {
     public class AtelierDTO
     {
-        public Guid AtelierId { get; set; }
-        public string AtelierLabel { get; set; }
-        public string FilialeLabel { get; set; }
+        public  Guid IdAtelier { get; set; }
+        public string NomAtelier { get; set; }
+        public string NomFiliale { get; set; }
     }
 }

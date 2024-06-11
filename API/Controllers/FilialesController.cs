@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Data.Context;
-using Domain.Entities;
+using Domain.Models;
 using Domain.DataTransferObjects;
 using Domain.Queries;
 using AutoMapper;
@@ -21,16 +21,16 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class FilialeController : ControllerBase
+    public class FilialesController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly ILogger<FilialeController> _logger;
+        private readonly ILogger<FilialesController> _logger;
 
-        public FilialeController(
+        public FilialesController(
             IMediator mediator,
             IMapper mapper,
-            ILogger<FilialeController> logger
+            ILogger<FilialesController> logger
             )
         {
             _mediator = mediator;
@@ -58,11 +58,11 @@ namespace API.Controllers
         }
 
         [HttpGet("get/{id}")]
-        public async Task<ActionResult<FilialeDTO>> GetFilialeById([FromRoute] Guid id)
+        public async Task<ActionResult<FilialeDTO>> GetFilialeById([FromRoute]  Guid id)
         {
             try
             {
-                GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.FilialeId == id);
+                GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.IdFiliale == id);
 
                 Filiale filiale = await _mediator.Send(query);
 
@@ -86,11 +86,11 @@ namespace API.Controllers
             try
             {
                 // check if the filiale already exists based on its label
-                GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.FilialeLabel == filialeDTO.FilialeLabel);
+                GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.NomFiliale == filialeDTO.NomFiliale);
                 Filiale existingFilialeByLabel = await _mediator.Send(query);
 
                 if (existingFilialeByLabel != null)
-                    return Conflict($"Filiale with label '{filialeDTO.FilialeLabel}' already exists");
+                    return Conflict($"Filiale with label '{filialeDTO.NomFiliale}' already exists");
 
                 Filiale filiale = _mapper.Map<Filiale>(filialeDTO);
 
@@ -107,12 +107,12 @@ namespace API.Controllers
         }
 
         [HttpPut("put/{id}")]
-        public async Task<ActionResult<string>> PutFiliale([FromRoute] Guid id, [FromBody] FilialeDTO filialeDTO)
+        public async Task<ActionResult<string>> PutFiliale([FromRoute]  Guid id, [FromBody] FilialeDTO filialeDTO)
         {
             try
             {
                 // check if id is valid
-                GetByGenericQuery<Filiale> queryById = new GetByGenericQuery<Filiale>(filiale => filiale.FilialeId == id);
+                GetByGenericQuery<Filiale> queryById = new GetByGenericQuery<Filiale>(filiale => filiale.IdFiliale == id);
                 Filiale existingFilialeById = await _mediator.Send(queryById);
 
                 if (existingFilialeById == null)
@@ -120,15 +120,15 @@ namespace API.Controllers
 
                 // check if another filiale with the same label exists
                 GetByGenericQuery<Filiale> queryByLabel = new GetByGenericQuery<Filiale>(
-                    filiale => filiale.FilialeLabel == filialeDTO.FilialeLabel && filiale.FilialeId != id);
+                    filiale => filiale.NomFiliale == filialeDTO.NomFiliale && filiale.IdFiliale != id);
                 Filiale existingFilialeByLabel = await _mediator.Send(queryByLabel);
 
                 if (existingFilialeByLabel != null)
-                    return Conflict($"Filiale with label '{filialeDTO.FilialeLabel}' already exists");
+                    return Conflict($"Filiale with label '{filialeDTO.NomFiliale}' already exists");
 
                 Filiale filiale = _mapper.Map<Filiale>(filialeDTO);
                 
-                filiale.FilialeId = id;
+                filiale.IdFiliale = id;
 
                 PutGenericCommand<Filiale> command = new PutGenericCommand<Filiale>(filiale);
                 string mediatorResponse = await _mediator.Send(command);
@@ -143,12 +143,12 @@ namespace API.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<ActionResult<string>> DeleteFiliale([FromRoute] Guid id)
+        public async Task<ActionResult<string>> DeleteFiliale([FromRoute]  Guid id)
         {
             try
             {
                 //check if id is valid
-                GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.FilialeId == id);
+                GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.IdFiliale == id);
                 Filiale filiale = await _mediator.Send(query);
 
                 if (filiale == null)

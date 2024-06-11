@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Data.Context;
-using Domain.Entities;
+using Domain.Models;
 using AutoMapper;
 using Domain.Commands;
 using Domain.DataTransferObjects;
@@ -19,16 +19,16 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class AtelierController : ControllerBase
+    public class AteliersController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly ILogger<AtelierController> _logger;
+        private readonly ILogger<AteliersController> _logger;
 
-        public AtelierController(
+        public AteliersController(
             IMediator mediator,
             IMapper mapper,
-            ILogger<AtelierController> logger
+            ILogger<AteliersController> logger
             )
         {
             _mediator = mediator;
@@ -56,11 +56,11 @@ namespace API.Controllers
         }
 
         [HttpGet("get/{id}")]
-        public async Task<ActionResult<AtelierDTO>> GetAtelierById([FromRoute] Guid id)
+        public async Task<ActionResult<AtelierDTO>> GetAtelierById([FromRoute]  Guid id)
         {
             try
             {
-                GetByGenericQuery<Atelier> query = new GetByGenericQuery<Atelier>(atelier => atelier.AtelierId == id, includes: query => query.Include(atelier => atelier.Filiale));
+                GetByGenericQuery<Atelier> query = new GetByGenericQuery<Atelier>(atelier => atelier.IdAtelier == id, includes: query => query.Include(atelier => atelier.Filiale));
 
                 Atelier atelier = await _mediator.Send(query);
 
@@ -84,20 +84,20 @@ namespace API.Controllers
             try
             {
                 // check if the atelier already exists based on its label
-                GetByGenericQuery<Atelier> query = new GetByGenericQuery<Atelier>(atelier => atelier.AtelierLabel == atelierDTO.AtelierLabel);
+                GetByGenericQuery<Atelier> query = new GetByGenericQuery<Atelier>(atelier => atelier.NomAtelier == atelierDTO.NomAtelier);
                 Atelier existingAtelierByLabel = await _mediator.Send(query);
 
                 if (existingAtelierByLabel != null)
-                    return Conflict($"Atelier with label '{atelierDTO.AtelierLabel}' already exists");
+                    return Conflict($"Atelier with label '{atelierDTO.NomAtelier}' already exists");
 
-                //check if atelierDTO.FilialeLabel exists
-                Filiale existingFilialeByLabel = await _mediator.Send(new GetByGenericQuery<Filiale>(filiale => filiale.FilialeLabel == atelierDTO.FilialeLabel));
+                //check if atelierDTO.NomFiliale exists
+                Filiale existingFilialeByLabel = await _mediator.Send(new GetByGenericQuery<Filiale>(filiale => filiale.NomFiliale == atelierDTO.NomFiliale));
                 if (existingFilialeByLabel == null)
-                    return NotFound($"Filiale with label '{atelierDTO.FilialeLabel}' not found");
+                    return NotFound($"Filiale with label '{atelierDTO.NomFiliale}' not found");
 
                 Atelier atelier = _mapper.Map<Atelier>(atelierDTO);
                 
-                atelier.FkFiliale = existingFilialeByLabel.FilialeId;
+                atelier.FkFiliale = existingFilialeByLabel.IdFiliale;
 
                 PostGenericCommand<Atelier> command = new PostGenericCommand<Atelier>(atelier);
                 string mediatorResponse = await _mediator.Send(command);
@@ -112,34 +112,34 @@ namespace API.Controllers
         }
 
         [HttpPut("put/{id}")]
-        public async Task<ActionResult<string>> PutAtelier([FromRoute] Guid id, [FromBody] AtelierDTO atelierDTO)
+        public async Task<ActionResult<string>> PutAtelier([FromRoute]  Guid id, [FromBody] AtelierDTO atelierDTO)
         {
             try
             {
                 // check if id is valid
-                GetByGenericQuery<Atelier> queryById = new GetByGenericQuery<Atelier>(atelier => atelier.AtelierId == id);
+                GetByGenericQuery<Atelier> queryById = new GetByGenericQuery<Atelier>(atelier => atelier.IdAtelier == id);
                 Atelier existingAtelierById = await _mediator.Send(queryById);
 
                 if (existingAtelierById == null)
                     return NotFound($"Atelier with id '{id}' not found");
 
-                // check if another atelier with the same label as atelierDTO.AtelierLabel exists
+                // check if another atelier with the same label as atelierDTO.NomAtelier exists
                 GetByGenericQuery<Atelier> queryByIdAndLabel = new GetByGenericQuery<Atelier>(atelier =>
-                    (atelier.AtelierId != id) && (atelier.AtelierLabel == atelierDTO.AtelierLabel));
+                    (atelier.IdAtelier != id) && (atelier.NomAtelier == atelierDTO.NomAtelier));
 
                 Atelier existingAtelierByIdAndLabel = await _mediator.Send(queryByIdAndLabel);
 
                 if (existingAtelierByIdAndLabel != null)
-                    return Conflict($"Atelier with label '{atelierDTO.AtelierLabel}' already exists");
+                    return Conflict($"Atelier with label '{atelierDTO.NomAtelier}' already exists");
 
-                //check if atelierDTO.FilialeLabel exists
-                Filiale existingFilialeByLabel = await _mediator.Send(new GetByGenericQuery<Filiale>(filiale => filiale.FilialeLabel == atelierDTO.FilialeLabel));
+                //check if atelierDTO.NomFiliale exists
+                Filiale existingFilialeByLabel = await _mediator.Send(new GetByGenericQuery<Filiale>(filiale => filiale.NomFiliale == atelierDTO.NomFiliale));
                 if (existingFilialeByLabel == null)
-                    return NotFound($"Filiale with label '{atelierDTO.FilialeLabel}' not found");
+                    return NotFound($"Filiale with label '{atelierDTO.NomFiliale}' not found");
 
                 Atelier atelier = _mapper.Map<Atelier>(atelierDTO);
-                atelier.AtelierId = id;
-                atelier.FkFiliale = existingFilialeByLabel.FilialeId;
+                atelier.IdAtelier = id;
+                atelier.FkFiliale = existingFilialeByLabel.IdFiliale;
 
                 PutGenericCommand<Atelier> command = new PutGenericCommand<Atelier>(atelier);
                 string mediatorResponse = await _mediator.Send(command);
@@ -154,12 +154,12 @@ namespace API.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<ActionResult<string>> DeleteAtelier([FromRoute] Guid id)
+        public async Task<ActionResult<string>> DeleteAtelier([FromRoute]  Guid id)
         {
             try
             {
                 //check if id is valid
-                GetByGenericQuery<Atelier> query = new GetByGenericQuery<Atelier>(atelier => atelier.AtelierId == id);
+                GetByGenericQuery<Atelier> query = new GetByGenericQuery<Atelier>(atelier => atelier.IdAtelier == id);
                 Atelier atelier = await _mediator.Send(query);
 
                 if (atelier == null)

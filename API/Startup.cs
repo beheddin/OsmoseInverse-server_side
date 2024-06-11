@@ -67,7 +67,6 @@ namespace OsmoseInverse
                     Contact = new OpenApiContact
                     {
                         Name = "Example Contact",
-
                     }
                 });
             });
@@ -77,8 +76,8 @@ namespace OsmoseInverse
             //services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             ////jwt
-            ////services.AddScoped<IUserService, UserService>();
-            //services.AddTransient<IUserService, UserService>();
+            ////services.AddScoped<ICompteService, CompteService>();
+            //services.AddTransient<ICompteService, CompteService>();
 
             //services.Configure<AuthOptions>(Configuration.GetSection("AuthOptions"));
 
@@ -90,7 +89,7 @@ namespace OsmoseInverse
             //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             //}).AddJwtBearer(options =>
             //{
-            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    options.TokenValidationParametres = new TokenValidationParametres
             //    {
             //        ValidateIssuer = true,
             //        ValidateAudience = true,
@@ -109,8 +108,8 @@ namespace OsmoseInverse
 
             RegisterServices(services);
 
-            //IUserRepository can ONLY be implemented by UserRepository
-            services.AddScoped<IUserRepository, UserRepository>();  //User repo
+            //ICompteRepository can ONLY be implemented by CompteRepository
+            services.AddScoped<ICompteRepository, CompteRepository>();  //Compte repo
 
             //IRoleRepository can ONLY be implemented by RoleRepository
             services.AddScoped<IRoleRepository, RoleRepository>();  //Role repo
@@ -146,7 +145,7 @@ namespace OsmoseInverse
 
             });
 
-            //app.UseHttpsRedirection();    //the server redirects HTTP requests to HTTPS. comment this line when using HTTP endpoints (e.g. 'http://localhost:5000/Users')
+            //app.UseHttpsRedirection();    //the server redirects HTTP requests to HTTPS. comment this line when using HTTP endpoints (e.g. 'http://localhost:5000/Comptes')
             app.UseRouting();
 
             //CORS

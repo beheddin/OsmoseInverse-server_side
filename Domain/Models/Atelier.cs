@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
-namespace Domain.Entities
+namespace Domain.Models
 {
     public class Atelier
     {
+        [Required]
         [Key]
-        public Guid AtelierId { get; set; }
+        public  Guid IdAtelier { get; set; }
         
         [Required]
-        public string AtelierLabel { get; set; }
+        [StringLength(30, MinimumLength = 3)]
+        public string NomAtelier { get; set; }
 
         #region Filiale
         public Guid? FkFiliale { get; set; }
-
         public virtual Filiale Filiale { get; set; }
         #endregion
 

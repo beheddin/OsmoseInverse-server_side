@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Domain.DataTransferObjects;
-using Domain.Entities;
+using Domain.Models;
 using System;
 
 namespace API.Mapper
@@ -9,45 +9,45 @@ namespace API.Mapper
     {
         public MappingProfiles()
         {
-            #region User
-            CreateMap<User, UserDTO>()
-            //Check if src.Role is null before accessing RoleLabel
-            .ForMember(dest => dest.RoleLabel, opt => opt.MapFrom(src => src.Role != null ? src.Role.RoleLabel.ToString() : string.Empty))
-            //.ForMember(dest => dest.RoleLabel, opt => opt.MapFrom(src => src.Role.RoleLabel.ToString()))
-            //.ForMember(dest => dest.FkRole, opt => opt.MapFrom(src => Guid.Empty)) // since Role is not part of UserDTO, FkRole might be empty.
+            #region Compte
+            CreateMap<Compte, CompteDTO>()
+            //Check if src.Role is null before accessing NomRole
+            .ForMember(dest => dest.NomRole, opt => opt.MapFrom(src => src.Role != null ? src.Role.NomRole.ToString() : string.Empty))
+            //.ForMember(dest => dest.NomRole, opt => opt.MapFrom(src => src.Role.NomRole.ToString()))
+            //.ForMember(dest => dest.FkRole, opt => opt.MapFrom(src => Guid.Empty)) // since Role is not part of CompteDTO, FkRole might be empty.
 
-            //Check if src.Filiale is null before accessing FilialeLabel
-            .ForMember(dest => dest.FilialeLabel, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.FilialeLabel : string.Empty))
-            //.ForMember(dest => dest.FilialeLabel, opt => opt.MapFrom(src => src.Filiale.FilialeLabel))
+            //Check if src.Filiale is null before accessing NomFiliale
+            .ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
+            //.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale.NomFiliale))
             .ReverseMap()
             .ForMember(dest => dest.FkRole, opt => opt.Ignore())
             .ForMember(dest => dest.FkFiliale, opt => opt.Ignore());
 
-            //From UserDTO to User: maps RoleLabel back to the Role entity by creating a new Role object with the corresponding RoleLabel
-            //.ForMember(user => user.Role, opt => opt.MapFrom(userDTO => userDTO.RoleLabel != null ? new Role { RoleLabel = userDTO.RoleLabel } : null));
+            //From CompteDTO to Compte: maps NomRole back to the Role entity by creating a new Role object with the corresponding NomRole
+            //.ForMember(compte => compte.Role, opt => opt.MapFrom(compteDTO => compteDTO.NomRole != null ? new Role { NomRole = compteDTO.NomRole } : null));
 
-            //// you might want to ignore mapping Password in UserDTO for security reasons
-            //.CreateMap<UserDTO, User>()
+            //// you might want to ignore mapping Password in CompteDTO for security reasons
+            //.CreateMap<CompteDTO, Compte>()
             //.ForMember(dest => dest.Role, opt => opt.Ignore());
 
-            CreateMap<User, LoginDTO>().ReverseMap();
+            CreateMap<Compte, LoginDTO>().ReverseMap();
             #endregion
 
             CreateMap<Role, RoleDTO>()
-           .ForMember(dest => dest.RoleLabel, opt => opt.MapFrom(src => src.RoleLabel.ToString()))
+           .ForMember(dest => dest.NomRole, opt => opt.MapFrom(src => src.NomRole.ToString()))
            .ReverseMap();
 
             CreateMap<Filiale, FilialeDTO>()
             .ReverseMap();
 
             CreateMap<Atelier, AtelierDTO>()
-            //.ForMember(dest => dest.FilialeLabel, opt => opt.MapFrom(src => src.Filiale.FilialeLabel))
-            .ForMember(dest => dest.FilialeLabel, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.FilialeLabel : string.Empty))
+            //.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale.NomFiliale))
+            .ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
             .ReverseMap();
 
             CreateMap<Station, StationDTO>()
-            //.ForMember(dest => dest.AtelierLabel, opt => opt.MapFrom(src => src.Atelier.AtelierLabel))
-            .ForMember(dest => dest.AtelierLabel, opt => opt.MapFrom(src => src.Atelier != null ? src.Atelier.AtelierLabel : string.Empty))
+            //.ForMember(dest => dest.NomAtelier, opt => opt.MapFrom(src => src.Atelier.NomAtelier))
+            .ForMember(dest => dest.NomAtelier, opt => opt.MapFrom(src => src.Atelier != null ? src.Atelier.NomAtelier : string.Empty))
             .ReverseMap();
         }
     }

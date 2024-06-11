@@ -11,48 +11,48 @@ namespace Data.Migrations
                 name: "Role",
                 columns: table => new
                 {
-                    RoleId = table.Column<Guid>(nullable: false),
-                    RoleLabel = table.Column<int>(nullable: false)
+                    IdRole = table.Column<Guid>(nullable: false),
+                    NomRole = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Role", x => x.RoleId);
+                    table.PrimaryKey("PK_Role", x => x.IdRole);
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Compte",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(nullable: false),
+                    IdCompte = table.Column<Guid>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
-                    Cin = table.Column<string>(nullable: false),
+                    CIN = table.Column<string>(nullable: false),
                     Password = table.Column<string>(nullable: false),
-                    Access = table.Column<bool>(nullable: false),
+                    IsAllowed = table.Column<bool>(nullable: false),
                     FkRole = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.UserId);
+                    table.PrimaryKey("PK_Compte", x => x.IdCompte);
                     table.ForeignKey(
-                        name: "FK_User_Role_FkRole",
+                        name: "FkCompte_Role_FkRole",
                         column: x => x.FkRole,
                         principalTable: "Role",
-                        principalColumn: "RoleId",
+                        principalColumn: "IdRole",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_FkRole",
-                table: "User",
+                name: "IX_Compte_FkRole",
+                table: "Compte",
                 column: "FkRole");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Compte");
 
             migrationBuilder.DropTable(
                 name: "Role");

@@ -8,45 +8,45 @@ namespace Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_User_Role_FkRole",
-                table: "User");
+                name: "FkCompte_Role_FkRole",
+                table: "Compte");
 
             migrationBuilder.AlterColumn<Guid>(
                 name: "FkRole",
-                table: "User",
+                table: "Compte",
                 nullable: true,
                 oldClrType: typeof(Guid),
                 oldType: "uniqueidentifier");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_User_Role_FkRole",
-                table: "User",
+                name: "FkCompte_Role_FkRole",
+                table: "Compte",
                 column: "FkRole",
                 principalTable: "Role",
-                principalColumn: "RoleId",
+                principalColumn: "IdRole",
                 onDelete: ReferentialAction.SetNull);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_User_Role_FkRole",
-                table: "User");
+                name: "FkCompte_Role_FkRole",
+                table: "Compte");
 
             migrationBuilder.AlterColumn<Guid>(
                 name: "FkRole",
-                table: "User",
+                table: "Compte",
                 type: "uniqueidentifier",
                 nullable: false,
                 oldClrType: typeof(Guid),
                 oldNullable: true);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_User_Role_FkRole",
-                table: "User",
+                name: "FkCompte_Role_FkRole",
+                table: "Compte",
                 column: "FkRole",
                 principalTable: "Role",
-                principalColumn: "RoleId",
+                principalColumn: "IdRole",
                 onDelete: ReferentialAction.Restrict);
         }
     }

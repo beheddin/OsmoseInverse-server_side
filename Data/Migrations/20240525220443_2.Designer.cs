@@ -21,30 +21,30 @@ namespace Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Domain.Entities.Role", b =>
+            modelBuilder.Entity("Domain.Models.Role", b =>
                 {
-                    b.Property<Guid>("RoleId")
+                    b.Property<Guid>("IdRole")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RoleLabel")
+                    b.Property<int>("NomRole")
                         .HasColumnType("int");
 
-                    b.HasKey("RoleId");
+                    b.HasKey("IdRole");
 
                     b.ToTable("Role");
                 });
 
-            modelBuilder.Entity("Domain.Entities.User", b =>
+            modelBuilder.Entity("Domain.Models.Compte", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("IdCompte")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Access")
+                    b.Property<bool>("IsAllowed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Cin")
+                    b.Property<string>("CIN")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -64,17 +64,17 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("IdCompte");
 
                     b.HasIndex("FkRole");
 
-                    b.ToTable("User");
+                    b.ToTable("Compte");
                 });
 
-            modelBuilder.Entity("Domain.Entities.User", b =>
+            modelBuilder.Entity("Domain.Models.Compte", b =>
                 {
-                    b.HasOne("Domain.Entities.Role", "Role")
-                        .WithMany("Users")
+                    b.HasOne("Domain.Models.Role", "Role")
+                        .WithMany("Comptes")
                         .HasForeignKey("FkRole")
                         .OnDelete(DeleteBehavior.SetNull);
                 });

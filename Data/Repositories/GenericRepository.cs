@@ -54,8 +54,8 @@ namespace Data.Repositories
             }
         }
 
-        ////public virtual async Task<T> GetByAsync(Guid id)
-        //public async Task<T> GetByAsync(Guid id)
+        ////public virtual async Task<T> GetByAsync( Guid id)
+        //public async Task<T> GetByAsync( Guid id)
         //{
         //    try
         //    {
@@ -151,7 +151,7 @@ namespace Data.Repositories
         /**/
 
         //REMOVE
-        //public async Task<string> RemoveAsync(Guid id)
+        //public async Task<string> RemoveAsync( Guid id)
         public async Task<string> RemoveAsync(Guid id)
         {
             try
@@ -269,7 +269,7 @@ namespace Data.Repositories
             }
         }
 
-        //public T GetBy(Guid id)
+        //public T GetBy( Guid id)
         //{
         //    try
         //    {

@@ -11,10 +11,10 @@ namespace Domain.Interfaces
     {
         #region Async functions
         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> condition = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> includes = null);
-        
-        //Task<T> GetByAsync(Guid id);
+
+        //Task<T> GetByAsync( Guid id);
         Task<T> GetByAsync(Expression<Func<T, bool>> condition = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> includes = null);
-        
+
         //Task<string> AddAsync(T entity);
         Task<string> AddAsync(T entity);
         //Task AddRangeAsync(IEnumerable<T> entities);
@@ -22,7 +22,7 @@ namespace Domain.Interfaces
         //Task<string> UpdateAsync(T entity);
         Task<string> UpdateAsync(T entity);
 
-        //Task<string> RemoveAsync(Guid id);
+        //Task<string> RemoveAsync( Guid id);
         Task<string> RemoveAsync(Guid id);
 
         //Task<string> RemoveObjectAsync(T entity);
@@ -38,7 +38,7 @@ namespace Domain.Interfaces
 
         #region Sync functions
         IEnumerable<T> GetAll(Expression<Func<T, bool>> condition = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> includes = null);
-        //T GetBy(Guid id);
+        //T GetBy( Guid id);
         T GetBy(Expression<Func<T, bool>> condition = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> includes = null);
         string Add(T entity);
         string Update(T entity);

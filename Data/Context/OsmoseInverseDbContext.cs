@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Domain.Entities;
+using Domain.Models;
 using System.Linq;
 
 
@@ -10,7 +10,7 @@ namespace Data.Context
         public OsmoseInverseDbContext(DbContextOptions<OsmoseInverseDbContext> options) : base(options) { }
 
         // entities DbSets
-        public DbSet<User> Users { get; set; }
+        public DbSet<Compte> Comptes { get; set; }
         public DbSet<Role> Roles { get; set; }
 
         public DbSet<Filiale> Filiales { get; set; }
@@ -50,16 +50,16 @@ namespace Data.Context
                 }
             }
 
-            //user's email is unique
-            //modelBuilder.Entity<User>(entity => { entity.HasIndex(e=>e.Email).IsUnique(); }) ;
+            //compte's email is unique
+            //modelBuilder.Entity<Compte>(entity => { entity.HasIndex(e=>e.Email).IsUnique(); }) ;
 
             #region Primary keys
-            modelBuilder.Entity<User>().HasKey(user => user.UserId);
-            modelBuilder.Entity<Role>().HasKey(role => role.RoleId);
+            modelBuilder.Entity<Compte>().HasKey(compte => compte.IdCompte);
+            modelBuilder.Entity<Role>().HasKey(role => role.IdRole);
 
-            modelBuilder.Entity<Filiale>().HasKey(filiale => filiale.FilialeId);
-            modelBuilder.Entity<Atelier>().HasKey(atelier => atelier.AtelierId);
-            modelBuilder.Entity<Station>().HasKey(station => station.StationId);
+            modelBuilder.Entity<Filiale>().HasKey(filiale => filiale.IdFiliale);
+            modelBuilder.Entity<Atelier>().HasKey(atelier => atelier.IdAtelier);
+            modelBuilder.Entity<Station>().HasKey(station => station.IdStation);
 
             //modelBuilder.Entity<SourceEau>().HasKey(c => c.SourceEauId);
             //modelBuilder.Entity<ProduitChimique>().HasKey(c => c.ProduitChimiqueId);
@@ -68,18 +68,18 @@ namespace Data.Context
             #endregion
 
             #region One to many relations
-            modelBuilder.Entity<User>()
-            .HasOne(user => user.Role)
-            .WithMany(role => role.Users)
-            .HasForeignKey(user => user.FkRole)
+            modelBuilder.Entity<Compte>()
+            .HasOne(compte => compte.Role)
+            .WithMany(role => role.Comptes)
+            .HasForeignKey(compte => compte.FkRole)
             .OnDelete(DeleteBehavior.SetNull);  // Set foreign key to null on delete
-                                                //.OnDelete(DeleteBehavior.Restrict);  //prevent the deletion of a Role if there is at least 1 User associated with it
+                                                //.OnDelete(DeleteBehavior.Restrict);  //prevent the deletion of a Role if there is at least 1 Compte associated with it
                                                 //.OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
-           .HasOne(user => user.Filiale)
-           .WithMany(filiale => filiale.Users)
-           .HasForeignKey(user => user.FkFiliale)
+            modelBuilder.Entity<Compte>()
+           .HasOne(compte => compte.Filiale)
+           .WithMany(filiale => filiale.Comptes)
+           .HasForeignKey(compte => compte.FkFiliale)
            .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Station>()
@@ -91,15 +91,15 @@ namespace Data.Context
 
             #region Many to one relations
             modelBuilder.Entity<Role>()
-                        .HasMany(role => role.Users)
-                        .WithOne(user => user.Role)
-                        .HasForeignKey(user => user.FkRole)
+                        .HasMany(role => role.Comptes)
+                        .WithOne(compte => compte.Role)
+                        .HasForeignKey(compte => compte.FkRole)
                         .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Filiale>()
-                        .HasMany(filiale => filiale.Users)
-                        .WithOne(user => user.Filiale)
-                        .HasForeignKey(user => user.FkFiliale)
+                        .HasMany(filiale => filiale.Comptes)
+                        .WithOne(compte => compte.Filiale)
+                        .HasForeignKey(compte => compte.FkFiliale)
                         .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Filiale>()
@@ -130,10 +130,10 @@ namespace Data.Context
             #endregion
 
             //#region Default values
-            //// RoleLabel default value is User
+            //// NomRole default value is Compte
             //modelBuilder.Entity<Role>()
-            //.Property(r => r.RoleLabel)
-            //.HasDefaultValue(RoleType.User);
+            //.Property(r => r.NomRole)
+            //.HasDefaultValue(RoleType.Compte);
             //#endregion
 
             base.OnModelCreating(modelBuilder);

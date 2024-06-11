@@ -21,58 +21,58 @@ namespace Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Domain.Entities.Atelier", b =>
+            modelBuilder.Entity("Domain.Models.Atelier", b =>
                 {
-                    b.Property<Guid>("AtelierId")
+                    b.Property<Guid>("IdAtelier")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AtelierLabel")
+                    b.Property<string>("NomAtelier")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("FkFiliale")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("AtelierId");
+                    b.HasKey("IdAtelier");
 
                     b.HasIndex("FkFiliale");
 
                     b.ToTable("Atelier");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Filiale", b =>
+            modelBuilder.Entity("Domain.Models.Filiale", b =>
                 {
-                    b.Property<Guid>("FilialeId")
+                    b.Property<Guid>("IdFiliale")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("FilialeLabel")
+                    b.Property<string>("NomFiliale")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("FilialeId");
+                    b.HasKey("IdFiliale");
 
                     b.ToTable("Filiale");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Role", b =>
+            modelBuilder.Entity("Domain.Models.Role", b =>
                 {
-                    b.Property<Guid>("RoleId")
+                    b.Property<Guid>("IdRole")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RoleLabel")
+                    b.Property<int>("NomRole")
                         .HasColumnType("int");
 
-                    b.HasKey("RoleId");
+                    b.HasKey("IdRole");
 
                     b.ToTable("Role");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Station", b =>
+            modelBuilder.Entity("Domain.Models.Station", b =>
                 {
-                    b.Property<Guid>("StationId")
+                    b.Property<Guid>("IdStation")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -88,30 +88,30 @@ namespace Data.Migrations
                     b.Property<string>("StationCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StationLabel")
+                    b.Property<string>("NomStation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TypeAmmortissement")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("StationId");
+                    b.HasKey("IdStation");
 
                     b.HasIndex("FkAtelier");
 
                     b.ToTable("Station");
                 });
 
-            modelBuilder.Entity("Domain.Entities.User", b =>
+            modelBuilder.Entity("Domain.Models.Compte", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("IdCompte")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Access")
+                    b.Property<bool>("IsAllowed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Cin")
+                    b.Property<string>("CIN")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -134,40 +134,40 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("IdCompte");
 
                     b.HasIndex("FkFiliale");
 
                     b.HasIndex("FkRole");
 
-                    b.ToTable("User");
+                    b.ToTable("Compte");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Atelier", b =>
+            modelBuilder.Entity("Domain.Models.Atelier", b =>
                 {
-                    b.HasOne("Domain.Entities.Filiale", "Filiale")
+                    b.HasOne("Domain.Models.Filiale", "Filiale")
                         .WithMany("Ateliers")
                         .HasForeignKey("FkFiliale")
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Station", b =>
+            modelBuilder.Entity("Domain.Models.Station", b =>
                 {
-                    b.HasOne("Domain.Entities.Atelier", "Atelier")
+                    b.HasOne("Domain.Models.Atelier", "Atelier")
                         .WithMany("Station")
                         .HasForeignKey("FkAtelier")
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
-            modelBuilder.Entity("Domain.Entities.User", b =>
+            modelBuilder.Entity("Domain.Models.Compte", b =>
                 {
-                    b.HasOne("Domain.Entities.Filiale", "Filiale")
-                        .WithMany("Users")
+                    b.HasOne("Domain.Models.Filiale", "Filiale")
+                        .WithMany("Comptes")
                         .HasForeignKey("FkFiliale")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Domain.Entities.Role", "Role")
-                        .WithMany("Users")
+                    b.HasOne("Domain.Models.Role", "Role")
+                        .WithMany("Comptes")
                         .HasForeignKey("FkRole")
                         .OnDelete(DeleteBehavior.SetNull);
                 });

@@ -4,14 +4,16 @@ using Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(OsmoseInverseDbContext))]
-    partial class OsmoseInverseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240609233518_4")]
+    partial class _4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,7 +316,7 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateInstallationProduitConsommable")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Discriminator")
@@ -330,7 +332,7 @@ namespace Data.Migrations
                     b.Property<string>("LabelProduitConsommable")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("QuantiteProduitConsommable")
+                    b.Property<double>("Quantite")
                         .HasColumnType("float");
 
                     b.Property<Guid?>("StationIdStation")

@@ -4,7 +4,7 @@ using Data.Repositories;
 using Domain.Commands;
 using Domain.Handlers;
 using Domain.Interfaces;
-using Domain.Entities;
+using Domain.Models;
 using Domain.Queries;
 using Domain.DataTransferObjects;
 using System;
@@ -19,16 +19,16 @@ namespace Infra
         {
             services.AddTransient<OsmoseInverseDbContext>();
 
-            #region User
-            services.AddTransient<IGenericRepository<User>, GenericRepository<User>>();
+            #region Compte
+            services.AddTransient<IGenericRepository<Compte>, GenericRepository<Compte>>();
 
-            services.AddTransient<IRequestHandler<GetAllGenericQuery<User>, IEnumerable<User>>, GetAllGenericHandler<User>>();
-            services.AddTransient<IRequestHandler<GetByGenericQuery<User>, User>, GetByGenericHandler<User>>();
+            services.AddTransient<IRequestHandler<GetAllGenericQuery<Compte>, IEnumerable<Compte>>, GetAllGenericHandler<Compte>>();
+            services.AddTransient<IRequestHandler<GetByGenericQuery<Compte>, Compte>, GetByGenericHandler<Compte>>();
 
-            services.AddTransient<IRequestHandler<PostGenericCommand<User>, string>, PostGenericHandler<User>>();
-            services.AddTransient<IRequestHandler<PutGenericCommand<User>, string>, PutGenericHandler<User>>();
-            services.AddTransient<IRequestHandler<DeleteGenericCommand<User>, string>, DeleteGenericHandler<User>>();
-            //services.AddTransient<IRequestHandler<DeleteObject<User>, string>, DeleteObjectHandler<User>>();
+            services.AddTransient<IRequestHandler<PostGenericCommand<Compte>, string>, PostGenericHandler<Compte>>();
+            services.AddTransient<IRequestHandler<PutGenericCommand<Compte>, string>, PutGenericHandler<Compte>>();
+            services.AddTransient<IRequestHandler<DeleteGenericCommand<Compte>, string>, DeleteGenericHandler<Compte>>();
+            //services.AddTransient<IRequestHandler<DeleteObject<Compte>, string>, DeleteObjectHandler<Compte>>();
             #endregion
 
             #region Role
@@ -88,10 +88,10 @@ namespace Infra
             //#region Equipment
             //#endregion
 
-            //#region StationParameter
+            //#region StationParametre
             //#endregion
 
-            //#region TrackingParameter
+            //#region TrackingParametre
             //#endregion
 
             //#region DailyTrackedItem

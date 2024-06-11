@@ -4,7 +4,7 @@ namespace Domain.DataTransferObjects
 {
     public class LoginDTO
     {
-        public string Cin { get; set; }
+        public string CIN { get; set; }
         public string Password { get; set; }
     }
 }

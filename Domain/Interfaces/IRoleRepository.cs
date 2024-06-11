@@ -1,5 +1,5 @@
 ﻿using Domain.DataTransferObjects;
-using Domain.Entities;
+using Domain.Models;
 using System;
 using System.Threading.Tasks;
 
