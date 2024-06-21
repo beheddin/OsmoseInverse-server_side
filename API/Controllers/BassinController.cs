@@ -89,12 +89,12 @@ namespace API.Controllers
         {
             try
             {
-                //check if bassinDTO.NomBassin already exists
-                GetByGenericQuery<Bassin> query = new GetByGenericQuery<Bassin>(bassin => bassin.NomBassin == bassinDTO.NomBassin);
+                //check if bassinDTO.NomSourceEau already exists
+                GetByGenericQuery<Bassin> query = new GetByGenericQuery<Bassin>(bassin => bassin.NomSourceEau == bassinDTO.NomSourceEau);
                 Bassin existingBassinByNom = await _mediator.Send(query);
 
                 if (existingBassinByNom != null)
-                    return Conflict(new MessageResponseDTO { Message = $"Bassin with Nom '{bassinDTO.NomBassin}' already exists" });
+                    return Conflict(new MessageResponseDTO { Message = $"Bassin with Nom '{bassinDTO.NomSourceEau}' already exists" });
 
                 //check if bassinDTO.NomFiliale exists
                 Filiale existingFilialeByNom = await _mediator.Send(new GetByGenericQuery<Filiale>(filiale => filiale.NomFiliale == bassinDTO.NomFiliale));
@@ -133,11 +133,11 @@ namespace API.Controllers
 
                 // check if another bassin with the same Nom exists
                 GetByGenericQuery<Bassin> queryByLabel = new GetByGenericQuery<Bassin>(
-                    bassin => bassin.NomBassin == bassinDTO.NomBassin && bassin.IdSourceEau != id);
+                    bassin => bassin.NomSourceEau == bassinDTO.NomSourceEau && bassin.IdSourceEau != id);
                 Bassin existingBassinByLabel = await _mediator.Send(queryByLabel);
 
                 if (existingBassinByLabel != null)
-                    return Conflict(new MessageResponseDTO { Message = $"Bassin with Nom '{bassinDTO.NomBassin}' already exists" });
+                    return Conflict(new MessageResponseDTO { Message = $"Bassin with Nom '{bassinDTO.NomSourceEau}' already exists" });
 
                 //check if bassinDTO.NomFiliale exists
                 Filiale existingFilialeByNom = await _mediator.Send(new GetByGenericQuery<Filiale>(filiale => filiale.NomFiliale == bassinDTO.NomFiliale));

@@ -18,15 +18,15 @@ namespace Data.Context
         public DbSet<Station> Stations { get; set; }
         public DbSet<StationEntretien> StationEntretiens { get; set; }
 
-
+        //public DbSet<SourceEau> SourceEaux{ get; set; } //SourceEau is Bassin
         public DbSet<Bassin> Bassins { get; set; }
-        public DbSet<Puit> Puits { get; set; }
+        public DbSet<Puit> Puits { get; set; }  //Puit is SourceEau with some additional attributes
+
         public DbSet<SourceEauEntretien> SourceEauEntretiens { get; set; }
+        //public DbSet<PuitEntretien> PuitEntretiens { get; set; }
+        //public DbSet<BassinEntretien> BassinEntretiens { get; set; }
 
         public DbSet<Fournisseur> Fournisseurs { get; set; }
-        //public DbSet<ProduitChimique> ProduitChimiques { get; set; }
-        //public DbSet<CategorieProduitChimique> CategorieProduitChimiques { get; set; }
-
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -128,28 +128,29 @@ namespace Data.Context
            .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<SourceEauEntretien>()
+           .HasOne(sourceEauEntretien => sourceEauEntretien.Fournisseur)
+           .WithMany(fournisseur => fournisseur.SourceEauEntretiens)
+           .HasForeignKey(sourceEauEntretien => sourceEauEntretien.FkFournisseur)
+           .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<SourceEauEntretien>()
             .HasOne(sourceEauEntretien => sourceEauEntretien.SourceEau)
             .WithMany(sourceEau => sourceEau.SourceEauEntretiens)
             .HasForeignKey(sourceEauEntretien => sourceEauEntretien.FkSourceEau)
             .OnDelete(DeleteBehavior.SetNull);
 
-            // modelBuilder.Entity<SourceEauEntretien>()
-            //.HasOne(sourceEauEntretien => sourceEauEntretien.Puit)
-            //.WithMany(puit => puit.SourceEauEntretiens)
-            //.HasForeignKey(sourceEauEntretien => sourceEauEntretien.FkPuit)
-            //.OnDelete(DeleteBehavior.SetNull);
+           // modelBuilder.Entity<PuitEntretien>()
+           //.HasOne(puitEntretien => puitEntretien.Puit)
+           //.WithMany(puit => puit.PuitEntretiens)
+           //.HasForeignKey(puitEntretien => puitEntretien.FkPuit)
+           //.OnDelete(DeleteBehavior.SetNull);
 
-            // modelBuilder.Entity<SourceEauEntretien>()
-            //.HasOne(sourceEauEntretien => sourceEauEntretien.Bassin)
-            //.WithMany(bassin => bassin.SourceEauEntretiens)
-            //.HasForeignKey(sourceEauEntretien => sourceEauEntretien.FkBassin)
-            //.OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<SourceEauEntretien>()
-           .HasOne(sourceEauEntretien => sourceEauEntretien.Fournisseur)
-           .WithMany(fournisseur => fournisseur.SourceEauEntretiens)
-           .HasForeignKey(sourceEauEntretien => sourceEauEntretien.FkFournisseur)
-           .OnDelete(DeleteBehavior.SetNull);
+           // modelBuilder.Entity<BassinEntretien>()
+           //.HasOne(bassinEntretien => bassinEntretien.Bassin)
+           //.WithMany(bassin => bassin.BassinEntretiens)
+           //.HasForeignKey(bassinEntretien => bassinEntretien.FkBassin)
+           //.OnDelete(DeleteBehavior.SetNull);
+            
             #endregion
 
             #region Many to one relations
@@ -196,15 +197,15 @@ namespace Data.Context
                         .OnDelete(DeleteBehavior.SetNull);
 
             //modelBuilder.Entity<Puit>()
-            //            .HasMany(puit => puit.SourceEauEntretiens)
-            //            .WithOne(sourceEauEntretien => sourceEauEntretien.Puit)
-            //            .HasForeignKey(sourceEauEntretien => sourceEauEntretien.FkPuit)
+            //            .HasMany(puit => puit.PuitEntretiens)
+            //            .WithOne(puitEntretien => puitEntretien.Puit)
+            //            .HasForeignKey(puitEntretien => puitEntretien.FkPuit)
             //            .OnDelete(DeleteBehavior.SetNull);
 
             //modelBuilder.Entity<Bassin>()
-            //            .HasMany(bassin => bassin.SourceEauEntretiens)
-            //            .WithOne(sourceEauEntretien => sourceEauEntretien.Bassin)
-            //            .HasForeignKey(sourceEauEntretien => sourceEauEntretien.FkBassin)
+            //            .HasMany(bassin => bassin.BassinEntretiens)
+            //            .WithOne(bassinEntretien => bassinEntretien.Bassin)
+            //            .HasForeignKey(bassinEntretien => bassinEntretien.FkBassin)
             //            .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Fournisseur>()
@@ -214,9 +215,9 @@ namespace Data.Context
             .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Fournisseur>()
-            .HasMany(fournisseur => fournisseur.StationEntretiens)
-            .WithOne(stationEntretien => stationEntretien.Fournisseur)
-            .HasForeignKey(stationEntretien => stationEntretien.FkFournisseur)
+            .HasMany(fournisseur => fournisseur.SourceEauEntretiens)
+            .WithOne(sourceEauEntretien => sourceEauEntretien.Fournisseur)
+            .HasForeignKey(sourceEauEntretien => sourceEauEntretien.FkFournisseur)
             .OnDelete(DeleteBehavior.Cascade);
 
 

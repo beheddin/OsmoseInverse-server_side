@@ -17,7 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class SourceEauEntretienController : ControllerBase
     {
@@ -96,15 +96,20 @@ namespace API.Controllers
                 if (existingSourceEauEntretienByNom != null)
                     return Conflict(new MessageResponseDTO { Message = $"SourceEauEntretien with Code '{sourceEauEntretienDTO.NomSourceEauEntretien}' already exists" });
 
-                //check if sourceEauEntretienDTO.NomPuit exists
-                Puit existingPuitByNom = await _mediator.Send(new GetByGenericQuery<Puit>(puit => puit.NomPuit == sourceEauEntretienDTO.NomPuit));
-                if (existingPuitByNom == null)
-                    return NotFound(new MessageResponseDTO { Message = $"Puit with Nom '{sourceEauEntretienDTO.NomPuit}' not found" });
+                ////check if sourceEauEntretienDTO.NomPuit exists
+                //Puit existingPuitByNom = await _mediator.Send(new GetByGenericQuery<Puit>(puit => puit.NomPuit == sourceEauEntretienDTO.NomPuit));
+                //if (existingPuitByNom == null)
+                //    return NotFound(new MessageResponseDTO { Message = $"Puit with Nom '{sourceEauEntretienDTO.NomPuit}' not found" });
 
-                //check if sourceEauEntretienDTO.NomBassin exists
-                Bassin existingBassinByNom = await _mediator.Send(new GetByGenericQuery<Bassin>(puit => puit.NomBassin == sourceEauEntretienDTO.NomBassin));
-                if (existingBassinByNom == null)
-                    return NotFound(new MessageResponseDTO { Message = $"Bassin with Nom '{sourceEauEntretienDTO.NomBassin}' not found" });
+                ////check if sourceEauEntretienDTO.NomBassin exists
+                //Bassin existingBassinByNom = await _mediator.Send(new GetByGenericQuery<Bassin>(puit => puit.NomBassin == sourceEauEntretienDTO.NomBassin));
+                //if (existingBassinByNom == null)
+                //    return NotFound(new MessageResponseDTO { Message = $"Bassin with Nom '{sourceEauEntretienDTO.NomBassin}' not found" });
+
+                //check if sourceEauEntretienDTO.NomSourceEau exists
+                SourceEau existingSourceEauByNom = await _mediator.Send(new GetByGenericQuery<SourceEau>(puit => puit.NomSourceEau == sourceEauEntretienDTO.NomSourceEau));
+                if (existingSourceEauByNom == null)
+                    return NotFound(new MessageResponseDTO { Message = $"SourceEau with Nom '{sourceEauEntretienDTO.NomSourceEau}' not found" });
 
                 //check if sourceEauEntretienDTO.NomFournisseur exists
                 Fournisseur existingFournisseurByNom = await _mediator.Send(new GetByGenericQuery<Fournisseur>(puit => puit.NomFournisseur == sourceEauEntretienDTO.NomFournisseur));
@@ -115,7 +120,7 @@ namespace API.Controllers
 
                 //sourceEauEntretien.FkPuit= existingPuitByNom.IdSourceEau;
                 //sourceEauEntretien.FkBassin= existingPuitByNom.IdSourceEau;
-                sourceEauEntretien.FkSourceEau= existingPuitByNom.IdSourceEau;
+                sourceEauEntretien.FkSourceEau = existingSourceEauByNom.IdSourceEau;
                 sourceEauEntretien.FkFournisseur = existingFournisseurByNom.IdFournisseur;
 
                 PostGenericCommand<SourceEauEntretien> command = new PostGenericCommand<SourceEauEntretien>(sourceEauEntretien);
@@ -152,15 +157,20 @@ namespace API.Controllers
                 if (existingSourceEauEntretienByLabel != null)
                     return Conflict(new MessageResponseDTO { Message = $"SourceEauEntretien with Code '{sourceEauEntretienDTO.NomSourceEauEntretien}' already exists" });
 
-                //check if sourceEauEntretienDTO.NomPuit exists
-                Puit existingPuitByNom = await _mediator.Send(new GetByGenericQuery<Puit>(puit => puit.NomPuit == sourceEauEntretienDTO.NomPuit));
-                if (existingPuitByNom == null)
-                    return NotFound(new MessageResponseDTO { Message = $"Puit with Nom '{sourceEauEntretienDTO.NomPuit}' not found" });
+                ////check if sourceEauEntretienDTO.NomPuit exists
+                //Puit existingPuitByNom = await _mediator.Send(new GetByGenericQuery<Puit>(puit => puit.NomPuit == sourceEauEntretienDTO.NomPuit));
+                //if (existingPuitByNom == null)
+                //    return NotFound(new MessageResponseDTO { Message = $"Puit with Nom '{sourceEauEntretienDTO.NomPuit}' not found" });
 
-                //check if sourceEauEntretienDTO.NomBassin exists
-                Bassin existingBassinByNom = await _mediator.Send(new GetByGenericQuery<Bassin>(puit => puit.NomBassin == sourceEauEntretienDTO.NomBassin));
-                if (existingBassinByNom == null)
-                    return NotFound(new MessageResponseDTO { Message = $"Bassin with Nom '{sourceEauEntretienDTO.NomBassin}' not found" });
+                ////check if sourceEauEntretienDTO.NomBassin exists
+                //Bassin existingBassinByNom = await _mediator.Send(new GetByGenericQuery<Bassin>(puit => puit.NomBassin == sourceEauEntretienDTO.NomBassin));
+                //if (existingBassinByNom == null)
+                //    return NotFound(new MessageResponseDTO { Message = $"Bassin with Nom '{sourceEauEntretienDTO.NomBassin}' not found" });
+
+                //check if sourceEauEntretienDTO.NomSourceEau exists
+                SourceEau existingSourceEauByNom = await _mediator.Send(new GetByGenericQuery<SourceEau>(puit => puit.NomSourceEau == sourceEauEntretienDTO.NomSourceEau));
+                if (existingSourceEauByNom == null)
+                    return NotFound(new MessageResponseDTO { Message = $"SourceEau with Nom '{sourceEauEntretienDTO.NomSourceEau}' not found" });
 
                 //check if sourceEauEntretienDTO.NomFournisseur exists
                 Fournisseur existingFournisseurByNom = await _mediator.Send(new GetByGenericQuery<Fournisseur>(puit => puit.NomFournisseur == sourceEauEntretienDTO.NomFournisseur));
@@ -172,7 +182,7 @@ namespace API.Controllers
                 sourceEauEntretien.IdSourceEauEntretien = id;
                 //sourceEauEntretien.FkPuit = existingPuitByNom.IdSourceEau;
                 //sourceEauEntretien.FkBassin = existingPuitByNom.IdSourceEau;
-                sourceEauEntretien.FkSourceEau = existingPuitByNom.IdSourceEau;
+                sourceEauEntretien.FkSourceEau = existingSourceEauByNom.IdSourceEau;
                 sourceEauEntretien.FkFournisseur = existingFournisseurByNom.IdFournisseur;
 
                 PutGenericCommand<SourceEauEntretien> command = new PutGenericCommand<SourceEauEntretien>(sourceEauEntretien);
