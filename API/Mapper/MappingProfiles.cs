@@ -88,31 +88,32 @@ namespace API.Mapper
             .ReverseMap()
             .ForMember(dest => dest.FkFiliale, opt => opt.Ignore());
 
-            //CreateMap<SourceEauEntretien, SourceEauEntretienDTO>()
-            ////.ForMember(dest => dest.NomPuit, opt => opt.MapFrom(src => src.SourceEau is Puit ? ((Puit)src.SourceEau).NomPuit : string.Empty))
-            ////.ForMember(dest => dest.NomPuit, opt => opt.MapFrom(src => src.SourceEau != null ? ((Puit)src.SourceEau).NomPuit : string.Empty))
+            CreateMap<SourceEauEntretien, SourceEauEntretienDTO>()
+            //.ForMember(dest => dest.NomPuit, opt => opt.MapFrom(src => src.SourceEau is Puit ? ((Puit)src.SourceEau).NomPuit : string.Empty))
+            //.ForMember(dest => dest.NomPuit, opt => opt.MapFrom(src => src.SourceEau != null ? ((Puit)src.SourceEau).NomPuit : string.Empty))
 
-            ////.ForMember(dest => dest.NomBassin, opt => opt.MapFrom(src => src.SourceEau is Bassin ? ((Bassin)src.SourceEau).NomBassin : string.Empty))
-            ////.ForMember(dest => dest.NomBassin, opt => opt.MapFrom(src => src.SourceEau != null ? ((Bassin)src.SourceEau).NomBassin : string.Empty))
+            //.ForMember(dest => dest.NomBassin, opt => opt.MapFrom(src => src.SourceEau is Bassin ? ((Bassin)src.SourceEau).NomBassin : string.Empty))
+            //.ForMember(dest => dest.NomBassin, opt => opt.MapFrom(src => src.SourceEau != null ? ((Bassin)src.SourceEau).NomBassin : string.Empty))
 
+            .ForMember(dest => dest.NomFournisseur, opt => opt.MapFrom(src => src.Fournisseur != null ? src.Fournisseur.NomFournisseur : string.Empty))
+            .ForMember(dest => dest.NomSourceEau, opt => opt.MapFrom(src => src.SourceEau != null ? src.SourceEau.NomSourceEau : string.Empty))
+            .ReverseMap()
+            .ForMember(dest => dest.FkSourceEau, opt => opt.Ignore())
+            .ForMember(dest => dest.FkFournisseur, opt => opt.Ignore());
+
+            //CreateMap<PuitEntretien, PuitEntretienDTO>()
+            //.ForMember(dest => dest.NomPuit, opt => opt.MapFrom(src => src.Puit != null ? src.Puit.NomPuit : string.Empty))
             //.ForMember(dest => dest.NomFournisseur, opt => opt.MapFrom(src => src.Fournisseur != null ? src.Fournisseur.NomFournisseur : string.Empty))
             //.ReverseMap()
-            //.ForMember(dest => dest.FkSourceEau, opt => opt.Ignore())
+            //.ForMember(dest => dest.FkPuit, opt => opt.Ignore())
             //.ForMember(dest => dest.FkFournisseur, opt => opt.Ignore());
 
-            CreateMap<PuitEntretien, PuitEntretienDTO>()
-            .ForMember(dest => dest.NomPuit, opt => opt.MapFrom(src => src.Puit != null ? src.Puit.NomPuit : string.Empty))
-            .ForMember(dest => dest.NomFournisseur, opt => opt.MapFrom(src => src.Fournisseur != null ? src.Fournisseur.NomFournisseur : string.Empty))
-            .ReverseMap()
-            .ForMember(dest => dest.FkPuit, opt => opt.Ignore())
-            .ForMember(dest => dest.FkFournisseur, opt => opt.Ignore());
-
-            CreateMap<BassinEntretien, BassinEntretienDTO>()
-            .ForMember(dest => dest.NomBassin, opt => opt.MapFrom(src => src.Bassin != null ? src.Bassin.NomBassin : string.Empty))
-            .ForMember(dest => dest.NomFournisseur, opt => opt.MapFrom(src => src.Fournisseur != null ? src.Fournisseur.NomFournisseur : string.Empty))
-            .ReverseMap()
-            .ForMember(dest => dest.FkBassin, opt => opt.Ignore())
-            .ForMember(dest => dest.FkFournisseur, opt => opt.Ignore());
+            //CreateMap<BassinEntretien, BassinEntretienDTO>()
+            //.ForMember(dest => dest.NomBassin, opt => opt.MapFrom(src => src.Bassin != null ? src.Bassin.NomBassin : string.Empty))
+            //.ForMember(dest => dest.NomFournisseur, opt => opt.MapFrom(src => src.Fournisseur != null ? src.Fournisseur.NomFournisseur : string.Empty))
+            //.ReverseMap()
+            //.ForMember(dest => dest.FkBassin, opt => opt.Ignore())
+            //.ForMember(dest => dest.FkFournisseur, opt => opt.Ignore());
 
             CreateMap<Fournisseur, FournisseurDTO>()
             .ReverseMap();

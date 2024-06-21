@@ -89,12 +89,12 @@ namespace API.Controllers
         {
             try
             {
-                //check if puitDTO.NomPuit already exists
-                GetByGenericQuery<Puit> query = new GetByGenericQuery<Puit>(puit => puit.NomPuit == puitDTO.NomPuit);
+                //check if puitDTO.NomSourceEau already exists
+                GetByGenericQuery<Puit> query = new GetByGenericQuery<Puit>(puit => puit.NomSourceEau == puitDTO.NomSourceEau);
                 Puit existingPuitByNom = await _mediator.Send(query);
 
                 if (existingPuitByNom != null)
-                    return Conflict(new MessageResponseDTO { Message = $"Puit with Nom '{puitDTO.NomPuit}' already exists" });
+                    return Conflict(new MessageResponseDTO { Message = $"Puit with Nom '{puitDTO.NomSourceEau}' already exists" });
 
                 //check if puitDTO.NomFiliale exists
                 Filiale existingFilialeByNom = await _mediator.Send(new GetByGenericQuery<Filiale>(filiale => filiale.NomFiliale == puitDTO.NomFiliale));
@@ -133,11 +133,11 @@ namespace API.Controllers
 
                 // check if another puit with the same Nom exists
                 GetByGenericQuery<Puit> queryByLabel = new GetByGenericQuery<Puit>(
-                    puit => puit.NomPuit == puitDTO.NomPuit && puit.IdSourceEau != id);
+                    puit => puit.NomSourceEau == puitDTO.NomSourceEau && puit.IdSourceEau != id);
                 Puit existingPuitByLabel = await _mediator.Send(queryByLabel);
 
                 if (existingPuitByLabel != null)
-                    return Conflict(new MessageResponseDTO { Message = $"Puit with Nom '{puitDTO.NomPuit}' already exists" });
+                    return Conflict(new MessageResponseDTO { Message = $"Puit with Nom '{puitDTO.NomSourceEau}' already exists" });
 
                 //check if puitDTO.NomFiliale exists
                 Filiale existingFilialeByNom = await _mediator.Send(new GetByGenericQuery<Filiale>(filiale => filiale.NomFiliale == puitDTO.NomFiliale));
