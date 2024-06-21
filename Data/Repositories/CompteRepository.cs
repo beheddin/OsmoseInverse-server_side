@@ -34,7 +34,7 @@ namespace Data.Repositories
 
         #region CRUD functions
         //public async Task<EntityResponseDTO<Compte>> CreateCompte(Compte compte)
-        public async Task<EntityResponseDTO<Compte>> CreateCompte(CompteDTO compteDTO)
+        public async Task<EntityResponseDTO<Compte>> CreateCompte([FromBody] CompteDTO compteDTO)
         //public async Task<Compte> CreateCompte(Compte compte)
         {
             try
@@ -201,7 +201,7 @@ namespace Data.Repositories
         #endregion
 
         #region Authentication functions
-        public async Task<LoginResponseDTO> Login(LoginDTO loginDTO)
+        public async Task<LoginResponseDTO> Login([FromBody] LoginDTO loginDTO)
         {
             try
             {
@@ -218,7 +218,7 @@ namespace Data.Repositories
                     };
 
                 // Check if compte access is denied
-                if (!existingCompte.IsAllowed)
+                if (!existingCompte.Access)
                     return new LoginResponseDTO
                     {
                         IsSuccessful = false,
@@ -313,24 +313,32 @@ namespace Data.Repositories
 
         /**/
 
-        //public async Task<EntityResponseDTO<Compte>> ChangePassword( Guid id, string newPassword)
-        public async Task<MessageResponseDTO> ChangePassword(string cin, string newPassword)
+        public async Task<MessageResponseDTO> ChangePassword([FromRoute] Guid id, [FromBody] ChangePasswordDTO changePasswordDTO)
         {
             try
             {
-                Compte existingCompteByCin = await _context.Comptes.SingleOrDefaultAsync(compte => compte.CIN == cin);
+                //Compte existingCompteByCin = await _context.Comptes.SingleOrDefaultAsync(compte => compte.CIN == cin);
+                Compte existingCompte= await _context.Comptes.FirstOrDefaultAsync(compte => compte.IdCompte == id);
 
-                if (existingCompteByCin == null)
+                if (existingCompte == null)
                     return new MessageResponseDTO
                     {
                         IsSuccessful = false,
                         Message = "Compte not found",
                     };
 
-                //new pwd & old pwd must be different
-                bool passwordIsIdentical = _authService.VerifyPassword(newPassword, existingCompteByCin.Password); //(password, hashedPassword)
 
-                if (passwordIsIdentical)
+                //verify if the current password is correct
+                bool currentPasswordIsValid = _authService.VerifyPassword(changePasswordDTO.CurrentPassword, existingCompte.Password);
+
+                if (!currentPasswordIsValid)
+                    return new MessageResponseDTO { IsSuccessful = false, Message = "Current password is incorrect" };
+
+
+                //ensure new pwd & old pwd are different
+                bool newPasswordIsIdentical = _authService.VerifyPassword(changePasswordDTO.NewPassword, existingCompte.Password); //(password, hashedPassword)
+
+                if (newPasswordIsIdentical)
                     return new MessageResponseDTO
                     {
                         IsSuccessful = false,
@@ -338,22 +346,22 @@ namespace Data.Repositories
                     };
 
                 //hash the new pwd
-                string newHashedPassword = _authService.HashPassword(newPassword);
+                string newHashedPassword = _authService.HashPassword(changePasswordDTO.NewPassword);
 
-                //verify the new pwd hashing
-                bool newHashedPasswordIsValid = _authService.VerifyPassword(newPassword, newHashedPassword);
+                ////verify the new pwd hashing
+                //bool newHashedPasswordIsValid = _authService.VerifyPassword(newPassword, newHashedPassword);
 
-                if (!newHashedPasswordIsValid)
-                    return new MessageResponseDTO
-                    {
-                        IsSuccessful = false,
-                        Message = "New password hashing is invalid",
-                    };
+                //if (!newHashedPasswordIsValid)
+                //    return new MessageResponseDTO
+                //    {
+                //        IsSuccessful = false,
+                //        Message = "New password hashing is invalid",
+                //    };
 
-                existingCompteByCin.Password = newHashedPassword;  //update the compte pwd
+                existingCompte.Password = newHashedPassword;  //update the compte pwd
 
                 // Save the changes to the database
-                _context.Comptes.Update(existingCompteByCin);
+                _context.Comptes.Update(existingCompte);
                 await _context.SaveChangesAsync();
 
                 return new MessageResponseDTO
@@ -374,11 +382,11 @@ namespace Data.Repositories
             }
         }
 
-        //public async Task<MessageResponseDTO> BlockCompte(string cin)
+        //public async Task<MessageResponseDTO> SwitchAccountAccess( Guid id)
         //{
         //    try
         //    {
-        //        Compte compte = await _context.Comptes.SingleOrDefaultAsync(compte => compte.CIN == cin);
+        //        Compte compte = await _context.Comptes.SingleOrDefaultAsync(compte => compte.IdCompte == id);
 
         //        if (compte == null)
         //            return new MessageResponseDTO
@@ -388,7 +396,7 @@ namespace Data.Repositories
         //            };
 
         //        // Toggle the compte's access status
-        //        compte.IsAllowed = !compte.IsAllowed;
+        //        compte.Access = !compte.Access;
 
         //        // Save the changes to the database
         //        _context.Comptes.Update(compte);

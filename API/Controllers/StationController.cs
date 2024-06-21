@@ -19,16 +19,16 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class StationsController : ControllerBase
+    public class StationController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly ILogger<StationsController> _logger;
+        private readonly ILogger<StationController> _logger;
 
-        public StationsController(
+        public StationController(
             IMediator mediator,
             IMapper mapper,
-            ILogger<StationsController> logger
+            ILogger<StationController> logger
             )
         {
             _mediator = mediator;
@@ -86,7 +86,7 @@ namespace API.Controllers
         {
             try
             {
-                // check if the station already exists based on its label
+                // check if the stationDTO.NomStation already exists
                 GetByGenericQuery<Station> query = new GetByGenericQuery<Station>(station => station.NomStation == stationDTO.NomStation);
                 Station existingStationByNom = await _mediator.Send(query);
 
@@ -168,7 +168,7 @@ namespace API.Controllers
                 Station station = await _mediator.Send(query);
 
                 if (station == null)
-                    return NotFound(new MessageResponseDTO { Message = $"Station with id '{id}' not found" });
+                    return NotFound(new MessageResponseDTO { Message = $"Station with ID '{id}' not found" });
 
                 string mediatorResponse = await _mediator.Send(new DeleteGenericCommand<Station>(id));
 
@@ -182,29 +182,28 @@ namespace API.Controllers
         }
 
         //only for supercomptes
-        [HttpPut("activateStation/{code}")]
-        public async Task<ActionResult<MessageResponseDTO>> ActivateStation([FromRoute] string code)
+        [HttpPut("toggleStationActivationStatus/{id}")]
+        public async Task<ActionResult<MessageResponseDTO>> ToggleStationActivationStatus([FromRoute] Guid id)
         {
             try
             {
                 //check if id is valid
-                GetByGenericQuery<Station> query = new GetByGenericQuery<Station>(station => station.CodeStation == code);
+                GetByGenericQuery<Station> query = new GetByGenericQuery<Station>(station => station.IdStation == id);
                 Station station = await _mediator.Send(query);
 
                 if (station == null)
-                    return NotFound(new MessageResponseDTO { Message = $"Station with Code '{code}' not found" });
+                    return NotFound(new MessageResponseDTO { Message = $"Station with ID '{id}' not found" });
 
-                // Toggle the station's status
                 station.IsActif = !station.IsActif;
 
-                var mediatorResponse = await _mediator.Send(new PutGenericCommand<Station>(station));
+                string mediatorResponse = await _mediator.Send(new PutGenericCommand<Station>(station));
 
                 return Ok(new MessageResponseDTO { IsSuccessful = true, Message = mediatorResponse });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while handling ActivateStation.");
-                throw new Exception($"An unexpected error occurred while handling ActivateStation: {ex.Message}", ex);
+                _logger.LogError(ex, "An error occurred while handling ToggleStationActivationStatus.");
+                throw new Exception($"An unexpected error occurred while handling ToggleStationActivationStatus: {ex.Message}", ex);
             }
         }
     }

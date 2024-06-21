@@ -12,7 +12,8 @@ namespace Domain.Interfaces
         Task<EntityResponseDTO<Compte>> UpdateCompte(Guid id, CompteDTO compteDTO);  //async fct
         Task<LoginResponseDTO> Login(LoginDTO loginDTO);     //async fct
         Task<EntityResponseDTO<Compte>> GetAuthenticatedCompte(string jwt);   //async fct
-        Task<MessageResponseDTO> ChangePassword(string cin, string newPassword);    //async fct
-        //Task<MessageResponseDTO> BlockCompte(string cin); //async fct
+        //Task<MessageResponseDTO> ChangePassword(string cin, ChangePasswordDTO changePasswordDTO);    //async fct
+        Task<MessageResponseDTO> ChangePassword(Guid id, ChangePasswordDTO changePasswordDTO);    //async fct
+        //Task<MessageResponseDTO> SwitchAccountAccess( Guid id); //async fct
     }
 }

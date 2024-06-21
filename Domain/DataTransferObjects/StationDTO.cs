@@ -9,10 +9,10 @@ namespace Domain.DataTransferObjects
     {
         public  Guid IdStation { get; set; }
         public string NomStation { get; set; }
-        public string CodeStation { get; set; }
+        //public string CodeStation { get; set; }
         public double CapaciteStation { get; set; }
         public string TypeAmmortissement { get; set; }
-        public bool IsActif { get; set; }
+        public bool? IsActif { get; set; }
         public string NomAtelier { get; set; }
     }
 }

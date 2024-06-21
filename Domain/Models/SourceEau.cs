@@ -4,15 +4,26 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models
 {
-    public class SourceEau
+    //public enum TypeSourceEau
+    //{
+    //    Bassin,
+    //    Puit
+    //}
+
+    public abstract class SourceEau
     {
         [Required]
         [Key]
-        public  Guid IdSourceEau { get; set; }
-        public Double VolumeEau { get; set; }
+        public Guid IdSourceEau { get; set; }
+
+        //[Required]
+        //[EnumDataType(typeof(TypeSourceEau), ErrorMessage = "SourceEau can only be 'Bassin' or 'Puit'")]
+        //public TypeSourceEau TypeSourceEau { get; set; }
+
+        public double VolumeEau { get; set; }
 
         #region Filiale
-        public  Guid? FkFiliale { get; set; }
+        public Guid? FkFiliale { get; set; }
         public virtual Filiale Filiale { get; set; }
         #endregion
 

@@ -1,7 +1,7 @@
 ﻿using Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace OsmoseProject.Models
+namespace Domain.Models
 {
     public class Bassin : SourceEau
     {

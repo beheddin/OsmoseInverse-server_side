@@ -76,6 +76,72 @@ namespace Infra
             services.AddTransient<IRequestHandler<DeleteGenericCommand<Station>, string>, DeleteGenericHandler<Station>>();
             #endregion
 
+            #region StationEntretien
+            services.AddTransient<IGenericRepository<StationEntretien>, GenericRepository<StationEntretien>>();
+
+            services.AddTransient<IRequestHandler<GetAllGenericQuery<StationEntretien>, IEnumerable<StationEntretien>>, GetAllGenericHandler<StationEntretien>>();
+            services.AddTransient<IRequestHandler<GetByGenericQuery<StationEntretien>, StationEntretien>, GetByGenericHandler<StationEntretien>>();
+
+            services.AddTransient<IRequestHandler<PostGenericCommand<StationEntretien>, string>, PostGenericHandler<StationEntretien>>();
+            services.AddTransient<IRequestHandler<PutGenericCommand<StationEntretien>, string>, PutGenericHandler<StationEntretien>>();
+            services.AddTransient<IRequestHandler<DeleteGenericCommand<StationEntretien>, string>, DeleteGenericHandler<StationEntretien>>();
+            #endregion
+
+            //#region SourceEau
+            //services.AddTransient<IGenericRepository<SourceEau>, GenericRepository<SourceEau>>();
+
+            //services.AddTransient<IRequestHandler<GetAllGenericQuery<SourceEau>, IEnumerable<SourceEau>>, GetAllGenericHandler<SourceEau>>();
+            //services.AddTransient<IRequestHandler<GetByGenericQuery<SourceEau>, SourceEau>, GetByGenericHandler<SourceEau>>();
+
+            //services.AddTransient<IRequestHandler<PostGenericCommand<SourceEau>, string>, PostGenericHandler<SourceEau>>();
+            //services.AddTransient<IRequestHandler<PutGenericCommand<SourceEau>, string>, PutGenericHandler<SourceEau>>();
+            //services.AddTransient<IRequestHandler<DeleteGenericCommand<SourceEau>, string>, DeleteGenericHandler<SourceEau>>();
+            //#endregion
+
+            #region Bassin
+            services.AddTransient<IGenericRepository<Bassin>, GenericRepository<Bassin>>();
+
+            services.AddTransient<IRequestHandler<GetAllGenericQuery<Bassin>, IEnumerable<Bassin>>, GetAllGenericHandler<Bassin>>();
+            services.AddTransient<IRequestHandler<GetByGenericQuery<Bassin>, Bassin>, GetByGenericHandler<Bassin>>();
+
+            services.AddTransient<IRequestHandler<PostGenericCommand<Bassin>, string>, PostGenericHandler<Bassin>>();
+            services.AddTransient<IRequestHandler<PutGenericCommand<Bassin>, string>, PutGenericHandler<Bassin>>();
+            services.AddTransient<IRequestHandler<DeleteGenericCommand<Bassin>, string>, DeleteGenericHandler<Bassin>>();
+            #endregion
+
+            #region Puit
+            services.AddTransient<IGenericRepository<Puit>, GenericRepository<Puit>>();
+
+            services.AddTransient<IRequestHandler<GetAllGenericQuery<Puit>, IEnumerable<Puit>>, GetAllGenericHandler<Puit>>();
+            services.AddTransient<IRequestHandler<GetByGenericQuery<Puit>, Puit>, GetByGenericHandler<Puit>>();
+
+            services.AddTransient<IRequestHandler<PostGenericCommand<Puit>, string>, PostGenericHandler<Puit>>();
+            services.AddTransient<IRequestHandler<PutGenericCommand<Puit>, string>, PutGenericHandler<Puit>>();
+            services.AddTransient<IRequestHandler<DeleteGenericCommand<Puit>, string>, DeleteGenericHandler<Puit>>();
+            #endregion
+
+            #region SourceEauEntretien
+            services.AddTransient<IGenericRepository<SourceEauEntretien>, GenericRepository<SourceEauEntretien>>();
+
+            services.AddTransient<IRequestHandler<GetAllGenericQuery<SourceEauEntretien>, IEnumerable<SourceEauEntretien>>, GetAllGenericHandler<SourceEauEntretien>>();
+            services.AddTransient<IRequestHandler<GetByGenericQuery<SourceEauEntretien>, SourceEauEntretien>, GetByGenericHandler<SourceEauEntretien>>();
+
+            services.AddTransient<IRequestHandler<PostGenericCommand<SourceEauEntretien>, string>, PostGenericHandler<SourceEauEntretien>>();
+            services.AddTransient<IRequestHandler<PutGenericCommand<SourceEauEntretien>, string>, PutGenericHandler<SourceEauEntretien>>();
+            services.AddTransient<IRequestHandler<DeleteGenericCommand<SourceEauEntretien>, string>, DeleteGenericHandler<SourceEauEntretien>>();
+            #endregion
+
+            #region Fournisseur
+            services.AddTransient<IGenericRepository<Fournisseur>, GenericRepository<Fournisseur>>();
+
+            services.AddTransient<IRequestHandler<GetAllGenericQuery<Fournisseur>, IEnumerable<Fournisseur>>, GetAllGenericHandler<Fournisseur>>();
+            services.AddTransient<IRequestHandler<GetByGenericQuery<Fournisseur>, Fournisseur>, GetByGenericHandler<Fournisseur>>();
+
+            services.AddTransient<IRequestHandler<PostGenericCommand<Fournisseur>, string>, PostGenericHandler<Fournisseur>>();
+            services.AddTransient<IRequestHandler<PutGenericCommand<Fournisseur>, string>, PutGenericHandler<Fournisseur>>();
+            services.AddTransient<IRequestHandler<DeleteGenericCommand<Fournisseur>, string>, DeleteGenericHandler<Fournisseur>>();
+            #endregion
+
             //#region TypeEquipment
 
             //#endregion

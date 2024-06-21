@@ -15,7 +15,7 @@ namespace Domain.Models
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-        public bool IsAllowed { get; set; } = true;
+        public bool Access { get; set; }
 
         #region Role
         public Guid? FkRole { get; set; }   // nullable foreign key

@@ -8,7 +8,7 @@ namespace Domain.Models
     {
         SuperAdmin,
         Admin,
-        Utilisateur
+        User
     }
 
     public class Role
@@ -18,7 +18,7 @@ namespace Domain.Models
         public  Guid IdRole { get; set; }
 
         [Required]
-        [EnumDataType(typeof(RoleType), ErrorMessage = "Role  can only be 'Utilisateur' or 'Admin' or 'SuperAdmin'")]
+        [EnumDataType(typeof(RoleType), ErrorMessage = "Role can only be 'User' or 'Admin' or 'SuperAdmin'")]
         public RoleType NomRole { get; set; }
 
         public virtual ICollection<Compte> Comptes { get; set; }

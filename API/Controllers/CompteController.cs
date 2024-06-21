@@ -23,18 +23,18 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ComptesController : ControllerBase
+    public class CompteController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ICompteRepository _repository;
-        private readonly ILogger<ComptesController> _logger;
+        private readonly ILogger<CompteController> _logger;
 
-        public ComptesController(
+        public CompteController(
             IMediator mediator,
             IMapper mapper,
             ICompteRepository repository,
-            ILogger<ComptesController> logger
+            ILogger<CompteController> logger
             )
         {
             _mediator = mediator;
@@ -63,7 +63,7 @@ namespace API.Controllers
         //        //    u.Email,
         //        //    u.CIN,
         //        //    u.Password,
-        //        //    u.IsAllowed,
+        //        //    u.Access,
         //        //    u.FkFiliale,
         //        //    NomFiliale = u.Filiale.NomFiliale, // Include the NomFiliale
         //        //    u.FkRole,
@@ -77,8 +77,8 @@ namespace API.Controllers
         //Mediator pattern
         //public IEnumerable<Compte> GetComptes()  //sync meth
         //public async Task<IEnumerable<CompteDTO>> GetComptes()   //async meth
-        public async Task<ActionResult<IEnumerable<CompteDTO>>> GetComptes()
         //public async Task<ActionResult<EntityResponseDTO<IEnumerable<CompteDTO>>>> GetComptes()
+        public async Task<ActionResult<IEnumerable<CompteDTO>>> GetComptes()
         {
             try
             {
@@ -489,12 +489,15 @@ namespace API.Controllers
 
         /**/
 
-        [HttpPut("changePassword/{cin}")]
-        public async Task<ActionResult<MessageResponseDTO>> ChangePassword([FromRoute] string cin, [FromBody] string newPassword)
+        //[HttpPut("changePassword/{cin}")]
+        //public async Task<ActionResult<MessageResponseDTO>> ChangePassword([FromRoute] string cin, [FromBody] string newPassword)
+        [HttpPut("changePassword/{id}")]
+        public async Task<ActionResult<MessageResponseDTO>> ChangePassword([FromRoute] Guid id, [FromBody] ChangePasswordDTO changePasswordDTO)
         {
             try
             {
-                MessageResponseDTO response = await _repository.ChangePassword(cin, newPassword);
+                //MessageResponseDTO response = await _repository.ChangePassword(cin, newPassword);
+                MessageResponseDTO response = await _repository.ChangePassword(id, changePasswordDTO);
 
                 if (!response.IsSuccessful)
                     switch (response.Message)
@@ -502,11 +505,14 @@ namespace API.Controllers
                         case "Compte not found":
                             return NotFound(new MessageResponseDTO { Message = response.Message });
 
+                        case "Current password is incorrect":
+                            return BadRequest(new MessageResponseDTO { Message = response.Message });
+
                         case "New password and old password must be different":
                             return BadRequest(new MessageResponseDTO { Message = response.Message });
 
-                        case "New password hashing is invalid":
-                            return BadRequest(new MessageResponseDTO { Message = response.Message });
+                        //case "New password hashing is invalid":
+                        //    return BadRequest(new MessageResponseDTO { Message = response.Message });
 
                         default:
                             _logger.LogError("Unexpected error: {0}", response.Message);
@@ -528,24 +534,24 @@ namespace API.Controllers
 
         /**/
 
-        //only for supercomptes
-        [HttpPut("blockCompte/{cin}")]
-        //public async Task<ActionResult<MessageResponseDTO>> BlockCompte([FromRoute]  Guid id)
-        public async Task<ActionResult<MessageResponseDTO>> BlockCompte([FromRoute] string cin)
+        //only for Admin
+        [HttpPut("switchAccountAccess/{id}")]
+        public async Task<ActionResult<MessageResponseDTO>> SwitchAccountAccess([FromRoute] Guid id)
+        //public async Task<ActionResult<MessageResponseDTO>> BlockCompte([FromRoute] string cin)
         {
             try
             {
                 //check if id is valid
-                //GetByGenericQuery<Compte> query = new GetByGenericQuery<Compte>(compte => compte.IdCompte == id);
-                GetByGenericQuery<Compte> query = new GetByGenericQuery<Compte>(compte => compte.CIN == cin);
+                GetByGenericQuery<Compte> query = new GetByGenericQuery<Compte>(compte => compte.IdCompte == id);
+                //GetByGenericQuery<Compte> query = new GetByGenericQuery<Compte>(compte => compte.CIN == cin);
                 Compte compte = await _mediator.Send(query);
 
                 if (compte == null)
                     //return NotFound($"Compte with id '{id}' don't exist");
-                    return NotFound(new MessageResponseDTO { Message = $"Compte with CIN '{cin}' not found" });
+                    return NotFound(new MessageResponseDTO { Message = $"Compte with ID '{id}' not found" });
 
                 // Toggle the compte's access status
-                compte.IsAllowed = !compte.IsAllowed;
+                compte.Access = !compte.Access;
 
                 string mediatorResponse = await _mediator.Send(new PutGenericCommand<Compte>(compte));
 

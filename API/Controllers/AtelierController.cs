@@ -20,16 +20,16 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class AteliersController : ControllerBase
+    public class AtelierController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly ILogger<AteliersController> _logger;
+        private readonly ILogger<AtelierController> _logger;
 
-        public AteliersController(
+        public AtelierController(
             IMediator mediator,
             IMapper mapper,
-            ILogger<AteliersController> logger
+            ILogger<AtelierController> logger
             )
         {
             _mediator = mediator;
@@ -87,7 +87,7 @@ namespace API.Controllers
         {
             try
             {
-                // check if the atelier already exists based on its label
+                //check if atelierDTO.NomAtelier already exists
                 GetByGenericQuery<Atelier> query = new GetByGenericQuery<Atelier>(atelier => atelier.NomAtelier == atelierDTO.NomAtelier);
                 Atelier existingAtelierByNom = await _mediator.Send(query);
 

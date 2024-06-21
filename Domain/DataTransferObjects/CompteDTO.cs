@@ -11,6 +11,7 @@ namespace Domain.DataTransferObjects
         public string CIN { get; set; }
         //[JsonIgnore]    //hide pwd in JSON response
         public string Password { get; set; }
+        public bool? Access { get; set; }
 
         public string NomRole { get; set; }
         public string NomFiliale { get; set; }

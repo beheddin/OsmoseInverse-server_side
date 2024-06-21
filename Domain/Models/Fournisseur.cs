@@ -10,9 +10,9 @@ namespace Domain.Models
         [Key]
         public  Guid IdFournisseur { get; set; }
         public string NomFournisseur{ get; set; }
-        public string CodeFournisseur { get; set; }
-        public int NumTelFournisseur { get; set; }
-        public int NumFaxFournisseur { get; set; }
+        //public string CodeFournisseur { get; set; }
+        public string NumTelFournisseur { get; set; }
+        public string NumFaxFournisseur { get; set; }
         public string EmailFournisseur { get; set; }
         public string AddresseFournisseur { get; set; }
 

@@ -20,18 +20,18 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class RolesController : ControllerBase
+    public class RoleController : ControllerBase
     {
         private readonly IRoleRepository _repository;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly ILogger<RolesController> _logger;
+        private readonly ILogger<RoleController> _logger;
 
-        public RolesController(
+        public RoleController(
             IRoleRepository repository,
             IMediator mediator,
             IMapper mapper,
-            ILogger<RolesController> logger
+            ILogger<RoleController> logger
             )
         {
             _repository = repository;

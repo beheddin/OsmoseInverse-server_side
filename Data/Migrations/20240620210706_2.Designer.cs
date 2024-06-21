@@ -4,14 +4,16 @@ using Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(OsmoseInverseDbContext))]
-    partial class OsmoseInverseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240620210706_2")]
+    partial class _2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,17 +160,20 @@ namespace Data.Migrations
                     b.Property<string>("AddresseFournisseur")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CodeFournisseur")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("EmailFournisseur")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NomFournisseur")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NumFaxFournisseur")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("NumFaxFournisseur")
+                        .HasColumnType("int");
 
-                    b.Property<string>("NumTelFournisseur")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("NumTelFournisseur")
+                        .HasColumnType("int");
 
                     b.HasKey("IdFournisseur");
 
@@ -395,6 +400,9 @@ namespace Data.Migrations
                     b.Property<double>("ChargeSourceEauEntretien")
                         .HasColumnType("float");
 
+                    b.Property<string>("CodeSourceEauEntretien")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Descriminant")
                         .HasColumnType("nvarchar(max)");
 
@@ -409,9 +417,6 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsExternalSourceEauEntretien")
                         .HasColumnType("bit");
-
-                    b.Property<string>("NomSourceEauEntretien")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdSourceEauEntretien");
 
@@ -430,6 +435,9 @@ namespace Data.Migrations
 
                     b.Property<int>("CapaciteStation")
                         .HasColumnType("int");
+
+                    b.Property<string>("CodeStation")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("FkAtelier")
                         .HasColumnType("uniqueidentifier");
@@ -461,6 +469,9 @@ namespace Data.Migrations
                     b.Property<double>("ChargeStationEntretien")
                         .HasColumnType("float");
 
+                    b.Property<string>("CodeStationEntretien")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DescriptionStationEntretien")
                         .HasColumnType("nvarchar(max)");
 
@@ -470,17 +481,20 @@ namespace Data.Migrations
                     b.Property<Guid?>("FkStation")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("FournisseurIdFournisseur")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsExternalStationEntretien")
                         .HasColumnType("bit");
 
-                    b.Property<string>("NomStationEntretien")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid?>("StationIdStation")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("IdStationEntretien");
 
-                    b.HasIndex("FkFournisseur");
+                    b.HasIndex("FournisseurIdFournisseur");
 
-                    b.HasIndex("FkStation");
+                    b.HasIndex("StationIdStation");
 
                     b.ToTable("StationEntretien");
                 });
@@ -757,13 +771,11 @@ namespace Data.Migrations
                 {
                     b.HasOne("Domain.Models.Fournisseur", "Fournisseur")
                         .WithMany("StationEntretiens")
-                        .HasForeignKey("FkFournisseur")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("FournisseurIdFournisseur");
 
                     b.HasOne("Domain.Models.Station", "Station")
                         .WithMany("StationEntretiens")
-                        .HasForeignKey("FkStation")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("StationIdStation");
                 });
 
             modelBuilder.Entity("Domain.Models.StationParametre", b =>

@@ -23,16 +23,16 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class FilialesController : ControllerBase
+    public class FilialeController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly ILogger<FilialesController> _logger;
+        private readonly ILogger<FilialeController> _logger;
 
-        public FilialesController(
+        public FilialeController(
             IMediator mediator,
             IMapper mapper,
-            ILogger<FilialesController> logger
+            ILogger<FilialeController> logger
             )
         {
             _mediator = mediator;
@@ -93,7 +93,7 @@ namespace API.Controllers
         {
             try
             {
-                // check if the filiale already exists based on its label
+                //check if filialeDTO.NomFiliale already exists
                 GetByGenericQuery<Filiale> query = new GetByGenericQuery<Filiale>(filiale => filiale.NomFiliale == filialeDTO.NomFiliale);
                 Filiale existingFilialeByNom = await _mediator.Send(query);
 

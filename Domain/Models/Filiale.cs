@@ -15,5 +15,6 @@ namespace Domain.Models
         public string AbbreviationNomFiliale { get; set; }
         public virtual ICollection<Compte> Comptes { get; set; }
         public virtual ICollection<Atelier> Ateliers { get; set; }
+        public virtual ICollection<SourceEau> SourcesEaux { get; set; }
     }
 }

@@ -12,10 +12,10 @@ namespace Domain.Models
         [Required]
         [StringLength(30, MinimumLength = 3)]
         public string NomStation { get; set; }
-        public string CodeStation { get; set; }
+        //public string CodeStation { get; set; }
         public int CapaciteStation { get; set; }
         public string TypeAmmortissement { get; set; }
-        public bool IsActif { get; set; } = false;
+        public bool IsActif { get; set; }
 
 
         #region Atelier
