@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models
 {
-    public class SourceEauEntretien
+    public abstract class SourceEauEntretien
     {
         [Required]
         [Key]
@@ -14,10 +14,10 @@ namespace Domain.Models
         public bool IsExternalSourceEauEntretien { get; set; }
         public string Descriminant { get; set; }
 
-        #region SourceEau
-        public Guid? FkSourceEau { get; set; }
-        public virtual SourceEau SourceEau { get; set; }
-        #endregion
+        //#region SourceEau
+        //public Guid? FkSourceEau { get; set; }
+        //public virtual SourceEau SourceEau { get; set; }
+        //#endregion
 
         //#region Puit
         //public Guid? FkPuit { get; set; }

@@ -1,14 +1,13 @@
-﻿//using OsmoseProject.Models;
-//using System;
-//using System.Collections.Generic;
-//using System.Text;
+﻿using System;
 
-//namespace Domain.Models
-//{
-//    public class PuitEntretien : Entretien
-//    {
-//        public Guid FK_SourceDeau { get; set; }
-//       // public virtual Puit Puit { get; set; }
-
-//    }
-//}
+namespace Domain.Models
+{
+    public class PuitEntretien : SourceEauEntretien
+    {
+        //public string NomPuit { get; set; }
+        #region Puit
+        public Guid? FkPuit { get; set; }
+        public virtual Puit Puit { get; set; }
+        #endregion
+    }
+}
