@@ -25,9 +25,6 @@ namespace Data.Context
         public DbSet<Puit> Puits { get; set; }
 
         public DbSet<SourceEauEntretien> SourceEauEntretiens { get; set; }
-        //public DbSet<PuitEntretien> PuitEntretiens { get; set; }
-        //public DbSet<BassinEntretien> BassinEntretiens { get; set; }
-
         public DbSet<Fournisseur> Fournisseurs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -91,12 +88,9 @@ namespace Data.Context
             modelBuilder.Entity<SourceEau>().HasKey(sourceEau => sourceEau.IdSourceEau);
             //modelBuilder.Entity<Puit>().HasKey(sourceEau => sourceEau.IdSourceEau);
             //modelBuilder.Entity<Bassin>().HasKey(sourceEau => sourceEau.IdSourceEau);
-            modelBuilder.Entity<SourceEauEntretien>().HasKey(sourceEauEntretien => sourceEauEntretien.IdSourceEauEntretien);
-            
-            modelBuilder.Entity<Fournisseur>().HasKey(c => c.IdFournisseur);
 
-            //modelBuilder.Entity<ProduitChimique>().HasKey(c => c.ProduitChimiqueId);
-            //modelBuilder.Entity<CategorieProduitChimique>().HasKey(c => c.CategorieProduitChimiqueId);
+            modelBuilder.Entity<SourceEauEntretien>().HasKey(sourceEauEntretien => sourceEauEntretien.IdSourceEauEntretien);
+            modelBuilder.Entity<Fournisseur>().HasKey(c => c.IdFournisseur);
             #endregion
 
             #region One to many relations

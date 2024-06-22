@@ -44,7 +44,8 @@ namespace API.Mapper
 
             CreateMap<Role, RoleDTO>()
            .ForMember(dest => dest.NomRole, opt => opt.MapFrom(src => src.NomRole.ToString()))
-           .ReverseMap();
+           .ReverseMap()
+           .ForMember(dest => dest.NomRole, opt => opt.MapFrom(src => Enum.Parse<TypeRole>(src.NomRole)));
 
             CreateMap<Filiale, FilialeDTO>()
             .ReverseMap();
@@ -74,53 +75,6 @@ namespace API.Mapper
             .ForMember(dest => dest.FkStation, opt => opt.Ignore())
             .ForMember(dest => dest.FkFournisseur, opt => opt.Ignore());
 
-            ////m1
-            //CreateMap<SourceEau, SourceEauDTO>()
-            //.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
-
-            ////.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
-            //.ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => src.Descriminant.ToString()))   //convert Descriminant of type enum TypeSourceEau into a string
-            //.ReverseMap()
-            //.ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => Enum.Parse<TypeSourceEau>(src.Descriminant)))
-            //.ForMember(dest => dest.FkFiliale, opt => opt.Ignore());
-
-            //CreateMap<Bassin, BassinDTO>()
-            ////.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
-            //.IncludeBase<SourceEau, SourceEauDTO>()
-            //.ReverseMap();
-            ////.ForMember(dest => dest.FkFiliale, opt => opt.Ignore());
-
-            //CreateMap<Puit, PuitDTO>()
-            ////.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
-            //.IncludeBase<SourceEau, SourceEauDTO>()
-            //.ReverseMap();
-            ////.ForMember(dest => dest.FkFiliale, opt => opt.Ignore());
-
-            ////m2
-            ////CreateMap<SourceEau, SourceEauDTO>()
-            ////.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
-
-            //////.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
-            ////.ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => src.Descriminant.ToString()))   //convert Descriminant of type enum TypeSourceEau into a string
-            ////.ReverseMap()
-            ////.ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => Enum.Parse<TypeSourceEau>(src.Descriminant)))
-            ////.ForMember(dest => dest.FkFiliale, opt => opt.Ignore());
-
-            //CreateMap<Bassin, BassinDTO>()
-            //.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
-            //.ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => src.Descriminant.ToString()))
-            //.ReverseMap()
-            //.ForMember(dest => dest.FkFiliale, opt => opt.Ignore())
-            //.ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => Enum.Parse<TypeSourceEau>(src.Descriminant)));
-
-            //CreateMap<Puit, PuitDTO>()
-            //.ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
-            //.ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => src.Descriminant.ToString()))
-            //.ReverseMap()
-            //.ForMember(dest => dest.FkFiliale, opt => opt.Ignore())
-            //.ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => Enum.Parse<TypeSourceEau>(src.Descriminant)));
-
-            //m3
             CreateMap<SourceEau, SourceEauDTO>()
             .ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => src.Descriminant.ToString()))
             .ForMember(dest => dest.NomFiliale, opt => opt.MapFrom(src => src.Filiale != null ? src.Filiale.NomFiliale : string.Empty))
@@ -141,31 +95,13 @@ namespace API.Mapper
             .ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => TypeSourceEau.Puit.ToString()));
 
             CreateMap<SourceEauEntretien, SourceEauEntretienDTO>()
-            //.ForMember(dest => dest.NomPuit, opt => opt.MapFrom(src => src.SourceEau is Puit ? ((Puit)src.SourceEau).NomPuit : string.Empty))
-            //.ForMember(dest => dest.NomPuit, opt => opt.MapFrom(src => src.SourceEau != null ? ((Puit)src.SourceEau).NomPuit : string.Empty))
-
-            //.ForMember(dest => dest.NomBassin, opt => opt.MapFrom(src => src.SourceEau is Bassin ? ((Bassin)src.SourceEau).NomBassin : string.Empty))
-            //.ForMember(dest => dest.NomBassin, opt => opt.MapFrom(src => src.SourceEau != null ? ((Bassin)src.SourceEau).NomBassin : string.Empty))
-
+            .ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => src.Descriminant.ToString()))   // Enum to string
             .ForMember(dest => dest.NomFournisseur, opt => opt.MapFrom(src => src.Fournisseur != null ? src.Fournisseur.NomFournisseur : string.Empty))
             .ForMember(dest => dest.NomSourceEau, opt => opt.MapFrom(src => src.SourceEau != null ? src.SourceEau.NomSourceEau : string.Empty))
-            .ReverseMap()
+            .ReverseMap()   //SourceEauEntretienDTO to SourceEauEntretien
+            .ForMember(dest => dest.Descriminant, opt => opt.MapFrom(src => Enum.Parse<TypeSourceEauEntretien>(src.Descriminant)))  // String to enum
             .ForMember(dest => dest.FkSourceEau, opt => opt.Ignore())
             .ForMember(dest => dest.FkFournisseur, opt => opt.Ignore());
-
-            //CreateMap<PuitEntretien, PuitEntretienDTO>()
-            //.ForMember(dest => dest.NomPuit, opt => opt.MapFrom(src => src.Puit != null ? src.Puit.NomPuit : string.Empty))
-            //.ForMember(dest => dest.NomFournisseur, opt => opt.MapFrom(src => src.Fournisseur != null ? src.Fournisseur.NomFournisseur : string.Empty))
-            //.ReverseMap()
-            //.ForMember(dest => dest.FkPuit, opt => opt.Ignore())
-            //.ForMember(dest => dest.FkFournisseur, opt => opt.Ignore());
-
-            //CreateMap<BassinEntretien, BassinEntretienDTO>()
-            //.ForMember(dest => dest.NomBassin, opt => opt.MapFrom(src => src.Bassin != null ? src.Bassin.NomBassin : string.Empty))
-            //.ForMember(dest => dest.NomFournisseur, opt => opt.MapFrom(src => src.Fournisseur != null ? src.Fournisseur.NomFournisseur : string.Empty))
-            //.ReverseMap()
-            //.ForMember(dest => dest.FkBassin, opt => opt.Ignore())
-            //.ForMember(dest => dest.FkFournisseur, opt => opt.Ignore());
 
             CreateMap<Fournisseur, FournisseurDTO>()
             .ReverseMap();

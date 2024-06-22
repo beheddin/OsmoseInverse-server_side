@@ -3,15 +3,26 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models
 {
+    public enum TypeSourceEauEntretien
+    {
+        BassinEntretien,
+        PuitEntretien
+    }
+
     public class SourceEauEntretien
     {
         [Key]
         public Guid IdSourceEauEntretien { get; set; }
+        [Required]
+        [StringLength(30, MinimumLength = 3)]
         public string NomSourceEauEntretien { get; set; }
         public string DescriptionSourceEauEntretien { get; set; }
         public double ChargeSourceEauEntretien { get; set; }
         public bool IsExternalSourceEauEntretien { get; set; }
-        public string Descriminant { get; set; }    //PuitEntretien ou BassinEntretien
+        [Required]
+        [EnumDataType(typeof(TypeSourceEau), ErrorMessage = "SourceEauEntretien can only be 'BassinEntretien' or 'PuitEntretien'")]
+        //public string Descriminant { get; set; }
+        public TypeSourceEauEntretien Descriminant { get; set; }    //PuitEntretien ou BassinEntretien
 
         #region SourceEau
         public Guid? FkSourceEau { get; set; }

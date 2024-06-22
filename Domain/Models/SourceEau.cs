@@ -18,11 +18,10 @@ namespace Domain.Models
         [StringLength(30, MinimumLength = 3)]
         public string NomSourceEau { get; set; }
         public double VolumeEau { get; set; }
-
         [Required]
         [EnumDataType(typeof(TypeSourceEau), ErrorMessage = "SourceEau can only be 'Bassin' or 'Puit'")]
+        //public string Descriminant { get; set; }
         public TypeSourceEau Descriminant { get; set; }    //Puit or Bassin
-        //public string Descriminant { get; set; }    //Puit or Bassin
 
         #region Filiale
         public Guid? FkFiliale { get; set; }

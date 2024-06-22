@@ -101,7 +101,7 @@ namespace API.Controllers
                 if (existingFilialeByNom == null)
                     return NotFound(new MessageResponseDTO { Message = $"Filiale with Nom '{puitDTO.NomFiliale}' not found" });
 
-                //chcek if Descriminant is valid (Puit or Bassin)
+                //check if Descriminant is valid (Puit or Bassin)
                 TypeSourceEau typeSourceEau;
 
                 if (!Enum.TryParse(puitDTO.Descriminant, true, out typeSourceEau))
