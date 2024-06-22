@@ -6,7 +6,6 @@ namespace Domain.Models
 {
     public class SuiviParametre
     {
-        [Required]
         [Key]
         public  Guid IdSuiviParametre { get; set; }
         public string LabelSuiviParametre { get; set; }

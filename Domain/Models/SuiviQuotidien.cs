@@ -5,7 +5,6 @@ namespace Domain.Models
 {
     public class SuiviQuotidien
     {
-        [Required]
         [Key]
         public Guid IdSuiviQuotidien { get; set; }
         public DateTime DateSuiviQuotidien { get; set; }

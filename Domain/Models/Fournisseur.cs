@@ -6,7 +6,6 @@ namespace Domain.Models
 {
     public class Fournisseur
     {
-        [Required]
         [Key]
         public  Guid IdFournisseur { get; set; }
         public string NomFournisseur{ get; set; }

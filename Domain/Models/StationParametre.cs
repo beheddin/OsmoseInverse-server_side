@@ -6,7 +6,6 @@ namespace Domain.Models
 {
     public class StationParametre
     {
-        [Required]
         [Key]
         public  Guid IdStationParametre { get; set; }
 

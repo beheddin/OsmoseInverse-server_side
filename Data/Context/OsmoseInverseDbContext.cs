@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Domain.Models;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Context
 {
@@ -18,9 +20,9 @@ namespace Data.Context
         public DbSet<Station> Stations { get; set; }
         public DbSet<StationEntretien> StationEntretiens { get; set; }
 
-        //public DbSet<SourceEau> SourceEaux{ get; set; } //SourceEau is Bassin
+        //public DbSet<SourceEau> SourceEaux{ get; set; }
         public DbSet<Bassin> Bassins { get; set; }
-        public DbSet<Puit> Puits { get; set; }  //Puit is SourceEau with some additional attributes
+        public DbSet<Puit> Puits { get; set; }
 
         public DbSet<SourceEauEntretien> SourceEauEntretiens { get; set; }
         //public DbSet<PuitEntretien> PuitEntretiens { get; set; }
@@ -35,6 +37,8 @@ namespace Data.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            
+
             //rename entities tables from plural to singular:
             // Get all the entities in the DbContext
             var entityTypes = modelBuilder.Model.GetEntityTypes().ToList();
@@ -59,8 +63,20 @@ namespace Data.Context
                 }
             }
 
-            //compte's email is unique
-            //modelBuilder.Entity<Compte>(entity => { entity.HasIndex(e=>e.Email).IsUnique(); }) ;
+            ////map the enum to a string in the database for 'Descriminant' of type 'TypeSourceEau' in 'SourceEau' entity, using the' ValueConverter' feature in EF Core
+            //var converter = new ValueConverter<TypeSourceEau, string>(
+            //v => v.ToString(),
+            //v => (TypeSourceEau)Enum.Parse(typeof(TypeSourceEau), v));
+
+            //modelBuilder.Entity<SourceEau>(entity =>
+            //{
+            //    entity.Property(e => e.Descriminant)
+            //          .HasConversion(converter)
+            //          .HasMaxLength(10);
+            //});
+
+            //NomCompte  is unique
+            //modelBuilder.Entity<Compte>(entity => { entity.HasIndex(e=>e.NomCompte).IsUnique(); }) ;
 
             #region Primary keys
             modelBuilder.Entity<Compte>().HasKey(compte => compte.IdCompte);
@@ -116,16 +132,24 @@ namespace Data.Context
            .HasForeignKey(fournisseur => fournisseur.FkFournisseur)
            .OnDelete(DeleteBehavior.SetNull);
 
+            //modelBuilder.Entity<SourceEau>()
+            //.HasDiscriminator<string>("Descriminant")
+            //.HasValue<Bassin>("Bassin")
+            //.HasValue<Puit>("Puit");
+
             modelBuilder.Entity<SourceEau>()
-            .HasDiscriminator<string>("Descriminant")
-            .HasValue<Bassin>("Bassin")
-            .HasValue<Puit>("Puit");
+            .HasDiscriminator<TypeSourceEau>("Descriminant")
+            .HasValue<Bassin>(TypeSourceEau.Bassin)
+            .HasValue<Puit>(TypeSourceEau.Puit);
 
             modelBuilder.Entity<SourceEau>()
            .HasOne(sourceEau => sourceEau.Filiale)
            .WithMany(filiale => filiale.SourcesEaux)
            .HasForeignKey(sourceEau => sourceEau.FkFiliale)
            .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Puit>();
+            modelBuilder.Entity<Bassin>();
 
             modelBuilder.Entity<SourceEauEntretien>()
            .HasOne(sourceEauEntretien => sourceEauEntretien.Fournisseur)
@@ -229,14 +253,14 @@ namespace Data.Context
 
             #endregion
 
+            base.OnModelCreating(modelBuilder);
+
             //#region Default values
             //// NomRole default value is Compte
             //modelBuilder.Entity<Role>()
             //.Property(r => r.NomRole)
-            //.HasDefaultValue(RoleType.Compte);
+            //.HasDefaultValue(TypeRole.Compte);
             //#endregion
-
-            base.OnModelCreating(modelBuilder);
         }
     }
 }

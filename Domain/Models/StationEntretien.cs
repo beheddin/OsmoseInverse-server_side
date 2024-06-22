@@ -5,7 +5,6 @@ namespace Domain.Models
 {
     public class StationEntretien 
     {
-        [Required]
         [Key]
         public  Guid IdStationEntretien { get; set; }
         public string NomStationEntretien { get; set; }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models
 {
     public class TypeMembrane
     {
+        [Key]
         public Guid IdTypeMembrane { get; set; }
         public string LabelTypeMembrane { get; set; }
         public double TailleTypeMembrane { get; set; }

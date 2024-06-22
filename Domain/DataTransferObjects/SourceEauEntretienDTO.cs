@@ -9,11 +9,11 @@ namespace Domain.DataTransferObjects
         public string DescriptionSourceEauEntretien { get; set; }
         public double ChargeSourceEauEntretien { get; set; }
         public bool IsExternalSourceEauEntretien { get; set; }
-        public string Descriminant { get; set; }    //Puit ou Bassin
+        public string Descriminant { get; set; }    //PuitEntretien ou BassinEntretien
 
         //public string? NomPuit { get; set; }
         //public string? NomBassin { get; set; }
-        public string NomSourceEau{ get; set; }    //Puit ou Bassin
+        public string NomSourceEau{ get; set; }
         public string NomFournisseur { get; set; }
     }
 }

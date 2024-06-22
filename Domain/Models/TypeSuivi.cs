@@ -6,9 +6,8 @@ namespace Domain.Models
 {
     public class SuiviType
     {
-        [Required]
         [Key]
-        public  Guid IdSuiviType { get; set; }
+        public Guid IdSuiviType { get; set; }
         public string LabelSuiviType { get; set; }
 
         public virtual ICollection<SuiviParametre> SuiviParametres { get; set; }

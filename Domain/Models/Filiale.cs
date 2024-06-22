@@ -6,7 +6,6 @@ namespace Domain.Models
 {
     public class Filiale
     {
-        [Required]
         [Key]
         public  Guid IdFiliale{ get; set; }
         [Required]

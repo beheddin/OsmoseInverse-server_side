@@ -101,9 +101,16 @@ namespace API.Controllers
                 if (existingFilialeByNom == null)
                     return NotFound(new MessageResponseDTO { Message = $"Filiale with Nom '{puitDTO.NomFiliale}' not found" });
 
+                //chcek if Descriminant is valid (Puit or Bassin)
+                TypeSourceEau typeSourceEau;
+
+                if (!Enum.TryParse(puitDTO.Descriminant, true, out typeSourceEau))
+                    return NotFound(new MessageResponseDTO { Message = $"Invalid Descriminant '{puitDTO.Descriminant}'" });
+
                 Puit puit = _mapper.Map<Puit>(puitDTO);
 
                 puit.FkFiliale = existingFilialeByNom.IdFiliale;
+                puit.Descriminant = typeSourceEau;
 
                 PostGenericCommand<Puit> command = new PostGenericCommand<Puit>(puit);
                 string mediatorResponse = await _mediator.Send(command);
@@ -144,10 +151,17 @@ namespace API.Controllers
                 if (existingFilialeByNom == null)
                     return NotFound(new MessageResponseDTO { Message = $"Filiale with Nom '{puitDTO.NomFiliale}' not found" });
 
+                //chcek if Descriminant is valid (Puit or Bassin)
+                TypeSourceEau typeSourceEau;
+
+                if (!Enum.TryParse(puitDTO.Descriminant, true, out typeSourceEau))
+                    return NotFound(new MessageResponseDTO { Message = $"Invalid Descriminant '{puitDTO.Descriminant}'" });
+
                 Puit puit = _mapper.Map<Puit>(puitDTO);
 
                 puit.IdSourceEau = id;
                 puit.FkFiliale = existingFilialeByNom.IdFiliale;
+                puit.Descriminant = typeSourceEau;
 
                 PutGenericCommand<Puit> command = new PutGenericCommand<Puit>(puit);
                 string mediatorResponse = await _mediator.Send(command);

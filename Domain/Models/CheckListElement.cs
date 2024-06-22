@@ -5,9 +5,9 @@ namespace Domain.Models
 {
     public class CheckListElement
     {
-        [Required]
         [Key]
         public Guid IdCheckListElement { get; set; }
+        [Required]
         public string LabelCheckList { get; set; }
 
         #region Station

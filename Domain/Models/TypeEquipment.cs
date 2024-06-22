@@ -7,7 +7,6 @@ namespace Domain.Models
 {
     public class TypeEquipment
     {
-        [Required]
         [Key]
         public  Guid IdTypeEquipment { get; set; }
         public string LabelTypeEquipment { get; set; }

@@ -32,10 +32,10 @@ namespace Data.Repositories
         {
             try
             {
-                // Verify if the roleLabel is a valid RoleType
-                RoleType roleType;
+                // Verify if the roleLabel is a valid TypeRole
+                TypeRole typeRole;
 
-                if (!Enum.TryParse(roleDTO.NomRole, true, out roleType))
+                if (!Enum.TryParse(roleDTO.NomRole, true, out typeRole))
                     return new EntityResponseDTO<Role>
                     {
                         IsSuccessful = false,
@@ -44,7 +44,7 @@ namespace Data.Repositories
                     };
 
                 // Check if the role already exists in the database
-                Role existingRole = await _context.Roles.FirstOrDefaultAsync(role => role.NomRole == roleType);
+                Role existingRole = await _context.Roles.FirstOrDefaultAsync(role => role.NomRole == typeRole);
 
                 if (existingRole != null)
                     return new EntityResponseDTO<Role>
@@ -57,7 +57,7 @@ namespace Data.Repositories
                 // Map RoleDTO to Role
                 Role role = _mapper.Map<Role>(roleDTO);
 
-                role.NomRole = roleType;
+                role.NomRole = typeRole;
 
                 return new EntityResponseDTO<Role>
                 {
@@ -95,10 +95,10 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                // Verify if the roleLabel is a valid RoleType
-                RoleType roleType;
+                // Verify if the roleLabel is a valid TypeRole
+                TypeRole typeRole;
 
-                if (!Enum.TryParse(roleDTO.NomRole, true, out roleType))
+                if (!Enum.TryParse(roleDTO.NomRole, true, out typeRole))
                     return new EntityResponseDTO<Role>
                     {
                         IsSuccessful = false,
@@ -107,7 +107,7 @@ namespace Data.Repositories
                     };
 
                 // Check if the role already exists
-                Role existingRoleByLabel = await _context.Roles.FirstOrDefaultAsync(role => role.NomRole == roleType);
+                Role existingRoleByLabel = await _context.Roles.FirstOrDefaultAsync(role => role.NomRole == typeRole);
 
                 if (existingRoleByLabel != null)
                     return new EntityResponseDTO<Role>
@@ -121,8 +121,7 @@ namespace Data.Repositories
                 Role role = _mapper.Map<Role>(roleDTO);
 
                 role.IdRole = id;
-
-                role.NomRole = roleType;
+                role.NomRole = typeRole;
 
                 return new EntityResponseDTO<Role>
                 {
@@ -144,7 +143,5 @@ namespace Data.Repositories
                 throw new Exception($"An unexpected error occurred while adding the compte: {ex.Message}", ex);
             }
         }
-
-
     }
 }

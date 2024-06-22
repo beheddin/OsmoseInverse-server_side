@@ -38,9 +38,8 @@ namespace Data.Migrations
                 {
                     IdFournisseur = table.Column<Guid>(nullable: false),
                     NomFournisseur = table.Column<string>(nullable: true),
-                    CodeFournisseur = table.Column<string>(nullable: true),
-                    NumTelFournisseur = table.Column<int>(nullable: false),
-                    NumFaxFournisseur = table.Column<int>(nullable: false),
+                    NumTelFournisseur = table.Column<string>(nullable: true),
+                    NumFaxFournisseur = table.Column<string>(nullable: true),
                     EmailFournisseur = table.Column<string>(nullable: true),
                     AddresseFournisseur = table.Column<string>(nullable: true)
                 },
@@ -154,11 +153,10 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     IdSourceEau = table.Column<Guid>(nullable: false),
+                    NomSourceEau = table.Column<string>(maxLength: 30, nullable: false),
                     VolumeEau = table.Column<double>(nullable: false),
+                    Descriminant = table.Column<int>(nullable: false),
                     FkFiliale = table.Column<Guid>(nullable: true),
-                    Descriminant = table.Column<string>(nullable: false),
-                    NomBassin = table.Column<string>(maxLength: 30, nullable: true),
-                    NomPuit = table.Column<string>(maxLength: 30, nullable: true),
                     Profondeur = table.Column<double>(nullable: true),
                     TypeAmortissement = table.Column<string>(nullable: true)
                 },
@@ -228,7 +226,6 @@ namespace Data.Migrations
                 {
                     IdStation = table.Column<Guid>(nullable: false),
                     NomStation = table.Column<string>(maxLength: 30, nullable: false),
-                    CodeStation = table.Column<string>(nullable: true),
                     CapaciteStation = table.Column<int>(nullable: false),
                     TypeAmmortissement = table.Column<string>(nullable: true),
                     IsActif = table.Column<bool>(nullable: false),
@@ -250,31 +247,29 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     IdSourceEauEntretien = table.Column<Guid>(nullable: false),
-                    SourceEauEntretienDescription = table.Column<string>(nullable: true),
-                    SourceEauEntretienCharge = table.Column<double>(nullable: false),
+                    NomSourceEauEntretien = table.Column<string>(nullable: true),
+                    DescriptionSourceEauEntretien = table.Column<string>(nullable: true),
+                    ChargeSourceEauEntretien = table.Column<double>(nullable: false),
                     IsExternalSourceEauEntretien = table.Column<bool>(nullable: false),
                     Descriminant = table.Column<string>(nullable: true),
                     FkSourceEau = table.Column<Guid>(nullable: true),
-                    NomPuit = table.Column<string>(nullable: true),
-                    NomBassin = table.Column<string>(nullable: true),
-                    FkFournisseur = table.Column<Guid>(nullable: true),
-                    FournisseurIdFournisseur = table.Column<Guid>(nullable: true)
+                    FkFournisseur = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SourceEauEntretien", x => x.IdSourceEauEntretien);
+                    table.ForeignKey(
+                        name: "FK_SourceEauEntretien_Fournisseur_FkFournisseur",
+                        column: x => x.FkFournisseur,
+                        principalTable: "Fournisseur",
+                        principalColumn: "IdFournisseur",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_SourceEauEntretien_SourceEau_FkSourceEau",
                         column: x => x.FkSourceEau,
                         principalTable: "SourceEau",
                         principalColumn: "IdSourceEau",
                         onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_SourceEauEntretien_Fournisseur_FournisseurIdFournisseur",
-                        column: x => x.FournisseurIdFournisseur,
-                        principalTable: "Fournisseur",
-                        principalColumn: "IdFournisseur",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -421,29 +416,27 @@ namespace Data.Migrations
                 {
                     IdStationEntretien = table.Column<Guid>(nullable: false),
                     NomStationEntretien = table.Column<string>(nullable: true),
-                    EntretienDescription = table.Column<string>(nullable: true),
-                    EntretienCharge = table.Column<double>(nullable: false),
-                    IsExternalEntretien = table.Column<bool>(nullable: false),
+                    DescriptionStationEntretien = table.Column<string>(nullable: true),
+                    ChargeStationEntretien = table.Column<double>(nullable: false),
+                    IsExternalStationEntretien = table.Column<bool>(nullable: false),
                     FkStation = table.Column<Guid>(nullable: true),
-                    StationIdStation = table.Column<Guid>(nullable: true),
-                    FkFournisseur = table.Column<Guid>(nullable: true),
-                    FournisseurIdFournisseur = table.Column<Guid>(nullable: true)
+                    FkFournisseur = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StationEntretien", x => x.IdStationEntretien);
                     table.ForeignKey(
-                        name: "FK_StationEntretien_Fournisseur_FournisseurIdFournisseur",
-                        column: x => x.FournisseurIdFournisseur,
+                        name: "FK_StationEntretien_Fournisseur_FkFournisseur",
+                        column: x => x.FkFournisseur,
                         principalTable: "Fournisseur",
                         principalColumn: "IdFournisseur",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StationEntretien_Station_StationIdStation",
-                        column: x => x.StationIdStation,
+                        name: "FK_StationEntretien_Station_FkStation",
+                        column: x => x.FkStation,
                         principalTable: "Station",
                         principalColumn: "IdStation",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -565,14 +558,14 @@ namespace Data.Migrations
                 column: "FkFiliale");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SourceEauEntretien_FkFournisseur",
+                table: "SourceEauEntretien",
+                column: "FkFournisseur");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SourceEauEntretien_FkSourceEau",
                 table: "SourceEauEntretien",
                 column: "FkSourceEau");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SourceEauEntretien_FournisseurIdFournisseur",
-                table: "SourceEauEntretien",
-                column: "FournisseurIdFournisseur");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Station_FkAtelier",
@@ -580,14 +573,14 @@ namespace Data.Migrations
                 column: "FkAtelier");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StationEntretien_FournisseurIdFournisseur",
+                name: "IX_StationEntretien_FkFournisseur",
                 table: "StationEntretien",
-                column: "FournisseurIdFournisseur");
+                column: "FkFournisseur");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StationEntretien_StationIdStation",
+                name: "IX_StationEntretien_FkStation",
                 table: "StationEntretien",
-                column: "StationIdStation");
+                column: "FkStation");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StationParametre_StationIdStation",

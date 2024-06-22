@@ -5,7 +5,6 @@ namespace Domain.Models
 {
     public class Objectif
     {
-        [Required]
         [Key]
         public  Guid IdObjectif { get; set; }
         public int Annee { get; set; }

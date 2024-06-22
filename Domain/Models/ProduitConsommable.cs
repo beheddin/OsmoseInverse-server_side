@@ -7,7 +7,6 @@ namespace Domain.Models
 {
     public class ProduitConsommable
     {
-        [Required]
         [Key]
         public  Guid IdProduitConsommable { get; set; }
         public string LabelProduitConsommable { get; set; }

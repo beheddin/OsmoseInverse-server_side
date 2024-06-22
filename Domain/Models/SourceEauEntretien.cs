@@ -5,14 +5,13 @@ namespace Domain.Models
 {
     public class SourceEauEntretien
     {
-        [Required]
         [Key]
         public Guid IdSourceEauEntretien { get; set; }
         public string NomSourceEauEntretien { get; set; }
         public string DescriptionSourceEauEntretien { get; set; }
         public double ChargeSourceEauEntretien { get; set; }
         public bool IsExternalSourceEauEntretien { get; set; }
-        public string Descriminant { get; set; }    //Puit ou Bassin
+        public string Descriminant { get; set; }    //PuitEntretien ou BassinEntretien
 
         #region SourceEau
         public Guid? FkSourceEau { get; set; }

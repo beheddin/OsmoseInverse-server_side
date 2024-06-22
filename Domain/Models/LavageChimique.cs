@@ -5,7 +5,6 @@ namespace Domain.Models
 {
     public class LavageChimique
     {
-        [Required]
         [Key]
         public Guid IdLavageChimique { get; set; }
         public DateTime DateLavageChimique { get; set; }

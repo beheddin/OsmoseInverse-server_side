@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models
 {
-    public enum RoleType
+    public enum TypeRole
     {
         SuperAdmin,
         Admin,
@@ -13,13 +13,12 @@ namespace Domain.Models
 
     public class Role
     {
-        [Required]
         [Key]
         public  Guid IdRole { get; set; }
 
         [Required]
-        [EnumDataType(typeof(RoleType), ErrorMessage = "Role can only be 'User' or 'Admin' or 'SuperAdmin'")]
-        public RoleType NomRole { get; set; }
+        [EnumDataType(typeof(TypeRole), ErrorMessage = "Role can only be 'User' or 'Admin' or 'SuperAdmin'")]
+        public TypeRole NomRole { get; set; }
 
         public virtual ICollection<Compte> Comptes { get; set; }
     }

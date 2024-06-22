@@ -6,7 +6,6 @@ namespace Domain.Models
 {
     public class Atelier
     {
-        [Required]
         [Key]
         public  Guid IdAtelier { get; set; }
         

@@ -58,9 +58,9 @@ namespace Data.Repositories
                     };
 
                 // check if compteDTO NomRole exists
-                RoleType roleType;
+                TypeRole typeRole;
 
-                if (!Enum.TryParse(compteDTO.NomRole, true, out roleType))  //compteDTO.NomRole: string
+                if (!Enum.TryParse(compteDTO.NomRole, true, out typeRole))  //compteDTO.NomRole: string
                     return new EntityResponseDTO<Compte>
                     {
                         IsSuccessful = false,
@@ -68,7 +68,7 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                Role existingRoleByLabel = await _context.Roles.SingleOrDefaultAsync(role => role.NomRole == roleType);
+                Role existingRoleByLabel = await _context.Roles.SingleOrDefaultAsync(role => role.NomRole == typeRole);
 
                 if (existingRoleByLabel == null)
                     return new EntityResponseDTO<Compte>
@@ -141,9 +141,9 @@ namespace Data.Repositories
                     };
 
                 // check if compteDTO.NomRole exists
-                RoleType roleType;
+                TypeRole typeRole;
 
-                if (!Enum.TryParse(compteDTO.NomRole, true, out roleType))  //compteDTO.NomRole: string
+                if (!Enum.TryParse(compteDTO.NomRole, true, out typeRole))  //compteDTO.NomRole: string
                     return new EntityResponseDTO<Compte>
                     {
                         IsSuccessful = false,
@@ -151,8 +151,8 @@ namespace Data.Repositories
                         Entity = null
                     };
 
-                //Role role = await _context.Roles.SingleOrDefaultAsync(role => role.NomRole == Enum.Parse<RoleType>(compteDTO.NomRole));
-                Role existingRoleByLabel = await _context.Roles.SingleOrDefaultAsync(role => role.NomRole == roleType);
+                //Role role = await _context.Roles.SingleOrDefaultAsync(role => role.NomRole == Enum.Parse<TypeRole>(compteDTO.NomRole));
+                Role existingRoleByLabel = await _context.Roles.SingleOrDefaultAsync(role => role.NomRole == typeRole);
 
                 if (existingRoleByLabel == null)
                     return new EntityResponseDTO<Compte>

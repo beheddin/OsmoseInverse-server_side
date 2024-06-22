@@ -6,7 +6,6 @@ namespace Domain.Models
 {
     public class Unite
     {
-        [Required]
         [Key]
         public  Guid IdUnite { get; set; }
         public string LabelUnite { get; set; }

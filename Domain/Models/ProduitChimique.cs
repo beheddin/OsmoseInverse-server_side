@@ -6,7 +6,6 @@ namespace Domain.Models
 {
     public class ProduitChimique
     {
-        [Required]
         [Key]
         public  Guid IdProduitChimique { get; set; }
         public string LabelProduitChimique { get; set; }

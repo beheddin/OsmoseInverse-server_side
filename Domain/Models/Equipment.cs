@@ -5,7 +5,6 @@ namespace Domain.Models
 {
     public class Equipment
     {
-        [Required]
         [Key]
         public  Guid IdEquipment { get; set; }
         public string LabelEquipment { get; set; }

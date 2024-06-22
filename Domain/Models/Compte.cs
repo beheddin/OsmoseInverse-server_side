@@ -5,7 +5,6 @@ namespace Domain.Models
 {
     public class Compte
     {
-        [Required]
         [Key]
         public  Guid IdCompte { get; set; }
         public string Nom { get; set; }
